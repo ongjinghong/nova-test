@@ -6,7 +6,8 @@
   <br>
 </h1>
 
-<h4 align="center">A desktop app built to manage Intel Flex's Innovation activities.</h4>
+<div align="center">
+  A desktop app built to manage Intel Flex's Innovation activities.
 
 <div align="center">
 
@@ -17,6 +18,14 @@
 ![Windows 11](https://img.shields.io/badge/Windows%2011-%230079d5.svg?style=for-the-badge&logo=Windows%2011&logoColor=white)
 
 </div>
+  <a href="https://github.com/intel-innersource/applications.tools.intel-flex-nova/issues/new?assignees=&labels=bug&template=bug_report.md&title=bug%3A+">Report a Bug</a>
+  ·
+  <a href="https://github.com/intel-innersource/applications.tools.intel-flex-nova/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=feat%3A+">Request a Feature</a>
+  .
+  <a href="https://github.com/intel-innersource/applications.tools.intel-flex-nova/discussions">Ask a Question</a>
+</div>
+
+<br><br>
 
 <p align="center">
   <a href="#key-features">Key Features</a> •
@@ -68,4 +77,4 @@ MIT
 ## Contact
 
 > Microsoft Teams [Ooi, Zheng Chyuan](https://teams.microsoft.com/l/chat/0/0?users=zheng.chyuan.ooi@intel.com) &nbsp;&middot;&nbsp;
-> GitHub [@zhengchy95](https://github.com/amitmerchant1990)
+> GitHub [@zhengchy95](https://github.com/zhengchy95)
