@@ -12,8 +12,18 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-transition-group": "^4.4.5",
     "@tauri-apps/api": "^2",
-    "@tauri-apps/plugin-shell": "^2"
+    "@tauri-apps/plugin-shell": "^2",
+    "@tauri-apps/plugin-process": "^2",
+    "@azure/msal-browser": "^3.20.0",
+    "@azure/msal-react": "^2.0.22",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^6.0.0",
+    "@mui/material": "^6.0.0",
+    "@mui/x-charts": "^7.13.0",
+    "@mui/x-data-grid": "^7.12.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.1",

@@ -1,50 +1,64 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/core";
+import React, { useState, useEffect, useMemo } from "react";
+import {
+  AuthenticatedTemplate,
+  UnauthenticatedTemplate,
+} from "@azure/msal-react";
+import { Box } from "@mui/material";
+
 import "./App.css";
+import Welcome from "./pages/welcome/welcome";
+import SideBar from "./components/sidebar/sideBar";
+import TopBar from "./components/topbar/topBar";
+import Home from "./pages/home/home";
+import Commitment from "./pages/commitment/Commitment";
+import Submission from "./pages/submission/Submission";
+import Target from "./pages/target/Target";
+import Stars from "./pages/stars/stars";
+import FullSpectrum from "./pages/innovators/FullSpectrum";
+import { FetchProfileData } from "./data/profileData";
+import { FetchSharepointData } from "./data/sharepointData";
+import { ThemeContextProvider } from "./config/themeContext";
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+  const [currentPage, setCurrentPage] = useState("Home");
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
-  }
+  const renderPage = () => {
+    switch (currentPage) {
+      case "Home":
+        return <Home />;
+      case "Commitment":
+        return <Commitment />;
+      case "Submission":
+        return <Submission />;
+      case "Target":
+        return <Target />;
+      case "Innovation Stars":
+        return <Stars />;
+      case "FullSpectrum":
+        return <FullSpectrum />;
+      default:
+        return <Home />;
+    }
+  };
 
   return (
-    <main className="container">
-      <h1>Welcome to Tauri + React</h1>
+    <ThemeContextProvider>
+      <Box className="app-box">
+        <AuthenticatedTemplate>
+          <FetchProfileData>
+            <SideBar setPage={setCurrentPage} />
+            <Box className="app-content">
+              <TopBar />
+              <FetchSharepointData>{renderPage()}</FetchSharepointData>
+            </Box>
+          </FetchProfileData>
+        </AuthenticatedTemplate>
 
-      <div className="row">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
-
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg}</p>
-    </main>
+        <UnauthenticatedTemplate>
+          <Welcome />
+        </UnauthenticatedTemplate>
+      </Box>
+    </ThemeContextProvider>
   );
 }
 

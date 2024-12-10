@@ -1,0 +1,24 @@
+.content-header {
+  display: flex;
+  justify-content: right;
+  margin-right: 25px;
+  margin-bottom: 10px;
+}
+
+.header-greetings {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  margin-top: 10px;
+  margin-left: 15px;
+}
+
+.header-theme,
+.header-notifications {
+  margin-top: 12px;
+}
+
+.header-pic {
+  margin-top: 14px;
+  margin-left: 10px;
+}

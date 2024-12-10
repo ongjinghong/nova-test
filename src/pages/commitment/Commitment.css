@@ -1,0 +1,15 @@
+.commitment-container {
+  width: 100vw - 250px;
+  flex-grow: 1;
+  overflow-y: auto;
+  margin-left: 25px;
+  margin-right: 25px;
+  margin-bottom: 25px;
+}
+
+.commitment-filter {
+  display: flex;
+  align-items: flex-start;
+  margin-left: 0px !important;
+  margin-bottom: 10px;
+}

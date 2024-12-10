@@ -1,0 +1,59 @@
+.welcome-page {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  flex-direction: column;
+  text-align: start;
+  justify-content: start;
+  align-items: start;
+}
+
+.title-box {
+  display: flex;
+  flex-direction: column;
+  width: 40%;
+  height: 50%;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.app-name {
+  opacity: 0;
+  animation: fadeIn 1s forwards;
+  animation-delay: 1s;
+  color: white;
+  letter-spacing: 25px;
+  margin-left: 25px !important;
+}
+
+.app-slogan {
+  opacity: 0;
+  animation: fadeIn 1s forwards;
+  animation-delay: 1s;
+  color: white;
+}
+
+.button-box {
+  width: 90%;
+  display: flex;
+  justify-content: end;
+}
+
+.login-button {
+  width: 300px;
+  height: 75px;
+  border-radius: 50px !important;
+  text-transform: none;
+  background-color: #2b2c30 !important;
+  color: white !important;
+  opacity: 0;
+  animation: fadeIn 1s forwards;
+  animation-delay: 2s;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}

@@ -1,0 +1,46 @@
+.sidebar-content {
+  height: 100%;
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sidebar-header {
+  display: flex;
+  flex-direction: column;
+  height: 200px;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-nav {
+  flex-grow: 1;
+}
+
+.nav-icon {
+  margin-left: 25px;
+}
+
+.sidebar-version {
+  margin-top: auto;
+  text-align: center;
+}
+
+.report-icon,
+.logout-icon,
+.feedback-icon {
+  justify-content: center;
+}
+
+.report-icon,
+.logout-text,
+.feedback-text {
+  text-align: left;
+}
+
+.track-divider {
+  padding-top: 10px;
+  padding-bottom: 5px;
+  font-size: 12px;
+}

@@ -1,0 +1,40 @@
+.submission-container {
+  width: 100vw - 250px;
+  flex-grow: 1;
+  overflow-y: auto;
+  margin-left: 25px;
+  margin-right: 25px;
+  margin-bottom: 25px;
+}
+
+.submission-filter {
+  display: flex;
+  align-items: flex-start;
+  margin-left: 0px !important;
+  margin-bottom: 10px;
+}
+
+.quarter-chip {
+  height: 25px !important;
+  width: 50px;
+  margin-right: 5px !important;
+}
+
+.submission-content {
+  text-align: left;
+}
+
+.details-title {
+  margin-top: 15px !important;
+}
+
+.filter-panel {
+  /* height: 250px; */
+  width: fit-content;
+  padding-left: 10px;
+  padding-top: 10px;
+  padding-bottom: 25px;
+  background-color: #fff;
+  border: 1px solid #888;
+  border-radius: 15px;
+}

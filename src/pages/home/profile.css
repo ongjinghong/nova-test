@@ -1,0 +1,21 @@
+.profile-card {
+  margin-top: 0px;
+}
+
+.mycommitment-title {
+  width: 50%;
+  align-self: "center";
+  flex-shrink: 0;
+}
+
+.mycommitment-value {
+  width: 25%;
+  align-self: "center";
+  text-align: center;
+}
+
+.mycommitment-details-value {
+  width: 20%;
+  align-self: "center";
+  text-align: center;
+}
