@@ -55,7 +55,7 @@ export default function CommitmentHighlight() {
               }
               sx={{ fontSize: "12px" }}
               onClick={() => handleFormOpen(2025)}
-              disabled={mycommitmentCurrentYear.length > 0 ? true : false}
+              disabled={currentYear <= 2025 ? false : true}
             >
               Add 2025 Commitment
             </Button>

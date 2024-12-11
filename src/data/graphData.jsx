@@ -31,9 +31,20 @@ export async function getProfilePic(accessToken) {
     headers: headers,
   };
 
-  return fetch(graphEndpoint.graphMyPicEndpoint, options).catch((error) =>
-    console.log(error)
-  );
+  try {
+    const response = await fetch(graphEndpoint.graphMyPicEndpoint, options);
+    if (!response.ok) {
+      if (response.status === 404) {
+        console.log("Profile photo not found.");
+        return null;
+      }
+      throw new Error(`Error fetching profile photo: ${response.statusText}`);
+    }
+    return response;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
 }
 
 // export async function getManager(accessToken) {

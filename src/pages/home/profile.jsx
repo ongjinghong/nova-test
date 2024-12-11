@@ -107,8 +107,8 @@ const ProfileCard = () => {
             >
               <Stack direction="row">
                 <Avatar
-                  alt={profile?.displayName}
-                  src={picture}
+                  alt={myinfo[0].name}
+                  src={picture ? picture : myinfo[0].pic}
                   sx={{ width: 140, height: 140 }}
                 />
                 <Stack

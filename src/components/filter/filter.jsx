@@ -257,44 +257,48 @@ function FilterPanel({
               ))}
             </ToggleButtonGroup>
           </Grid>
-          <Grid size={3} sx={{ display: "flex", flexDirection: "column" }}>
-            <Typography variant="subtitle2">EA</Typography>
-            <ToggleButtonGroup
-              value={filters.EA}
-              onChange={(e) => handleToggleChange("EA", e.target.value)}
-              color="primary"
-              fullWidth
-            >
-              {ea.map((ea_status, index) => (
-                <ToggleButton
-                  key={`ea_status-${index}`}
-                  value={ea_status}
-                  aria-label={ea_status}
-                >
-                  {ea_status}
-                </ToggleButton>
-              ))}
-            </ToggleButtonGroup>
-          </Grid>
-          <Grid size={8} sx={{ display: "flex", flexDirection: "column" }}>
-            <Typography variant="subtitle2">Status</Typography>
-            <ToggleButtonGroup
-              value={filters.Status}
-              onChange={(e) => handleToggleChange("Status", e.target.value)}
-              color="primary"
-              fullWidth
-            >
-              {statuses.map((status, index) => (
-                <ToggleButton
-                  key={`status-${index}`}
-                  value={status}
-                  aria-label={status}
-                >
-                  {status}
-                </ToggleButton>
-              ))}
-            </ToggleButtonGroup>
-          </Grid>
+          {data.some((item) => "ea" in item) && (
+            <Grid size={3} sx={{ display: "flex", flexDirection: "column" }}>
+              <Typography variant="subtitle2">EA</Typography>
+              <ToggleButtonGroup
+                value={filters.EA}
+                onChange={(e) => handleToggleChange("EA", e.target.value)}
+                color="primary"
+                fullWidth
+              >
+                {ea.map((ea_status, index) => (
+                  <ToggleButton
+                    key={`ea_status-${index}`}
+                    value={ea_status}
+                    aria-label={ea_status}
+                  >
+                    {ea_status}
+                  </ToggleButton>
+                ))}
+              </ToggleButtonGroup>
+            </Grid>
+          )}
+          {data.some((item) => "status" in item) && (
+            <Grid size={8} sx={{ display: "flex", flexDirection: "column" }}>
+              <Typography variant="subtitle2">Status</Typography>
+              <ToggleButtonGroup
+                value={filters.Status}
+                onChange={(e) => handleToggleChange("Status", e.target.value)}
+                color="primary"
+                fullWidth
+              >
+                {statuses.map((status, index) => (
+                  <ToggleButton
+                    key={`status-${index}`}
+                    value={status}
+                    aria-label={status}
+                  >
+                    {status}
+                  </ToggleButton>
+                ))}
+              </ToggleButtonGroup>
+            </Grid>
+          )}
           {data.some((item) => "category" in item) && (
             <Grid size={12} sx={{ display: "flex", flexDirection: "column" }}>
               <Typography variant="subtitle2">Category</Typography>

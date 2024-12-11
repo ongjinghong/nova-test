@@ -78,6 +78,7 @@ export default function TimelineForm({
       <FormGrid size={6}>
         <FormLabel required>Status</FormLabel>
         <Autocomplete
+          disablePortal
           options={[
             "New",
             "WIP",

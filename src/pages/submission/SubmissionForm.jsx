@@ -67,24 +67,43 @@ export default function SubmissionForm({ open, setOpen, data, year }) {
   const { token, fetchSubmissionData, addSubmission, updateSubmission } =
     useSharePointData();
   const [activeStep, setActiveStep] = useState(0);
-  const [defaultSubmissionData, setDefaultSubmissionData] = useState({
-    Title: "",
-    ProblemStatement: "",
-    SolutionandBenefits: "",
-    Category: "",
-    EA: null,
-    SRNumber: "",
-    SubmissionPlatform: "",
-    SubmissionID: "",
-    PrimaryAuthorLookupId: "",
-    SecondaryAuthorLookupId: [],
-    Site: [],
-    Domain: [],
-    Quarter: "",
-    Duration: 0,
-    Status: "",
-    // Future: "",
-  });
+  const [defaultSubmissionData, setDefaultSubmissionData] = useState(
+    year == 2024
+      ? {
+          Title: "",
+          ProblemStatement: "",
+          SolutionandBenefits: "",
+          Category: "",
+          EA: null,
+          SRNumber: "",
+          SubmissionPlatform: "",
+          SubmissionID: "",
+          PrimaryAuthorLookupId: "",
+          SecondaryAuthorLookupId: [],
+          Site: [],
+          Domain: [],
+          Quarter: "",
+          Status: "",
+        }
+      : {
+          Title: "",
+          ProblemStatement: "",
+          SolutionandBenefits: "",
+          Category: "",
+          EA: null,
+          SRNumber: "",
+          SubmissionPlatform: "",
+          SubmissionID: "",
+          PrimaryAuthorLookupId: "",
+          SecondaryAuthorLookupId: [],
+          Site: [],
+          Domain: [],
+          Quarter: "",
+          Duration: data ? data.duration : 0,
+          Status: "",
+          // Future: "",
+        }
+  );
   const [newSubmissionData, setNewSubmissionData] = useState(
     defaultSubmissionData
   );

@@ -37,15 +37,19 @@ export const FetchProfileData = ({ children }) => {
 
     const fetchProfilePic = async (token) => {
       const photoResponse = await getProfilePic(token);
-      if (photoResponse.ok) {
+      if (photoResponse !== null && photoResponse.ok) {
         const imageBlob = await photoResponse.blob();
         const imageObjectURL = URL.createObjectURL(imageBlob);
         setProfileData((prevState) => ({
           ...prevState,
           picture: imageObjectURL,
         }));
-      } else {
-        console.error("Failed to fetch photo", photoResponse.statusText);
+      } else if (photoResponse == null) {
+        console.log("Failed to fetch photo", photoResponse?.statusText);
+        setProfileData((prevState) => ({
+          ...prevState,
+          picture: "../../public/icon.png",
+        }));
       }
     };
 
