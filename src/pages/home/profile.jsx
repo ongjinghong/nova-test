@@ -42,7 +42,7 @@ const ProfileCard = () => {
       (item.author1 === myinfo[0].lookupid ||
         (Array.isArray(item.author2) &&
           item.author2.some(
-            (author) => author.LookupId === myinfo[0].lookupid
+            (author) => author.LookupId.toString() === myinfo[0].lookupid
           )))
   );
   const mycommitmentCurrentYear = mycommitment.filter(
@@ -108,7 +108,13 @@ const ProfileCard = () => {
               <Stack direction="row">
                 <Avatar
                   alt={myinfo[0].name}
-                  src={picture ? picture : myinfo[0].pic}
+                  src={
+                    picture
+                      ? picture
+                      : myinfo[0].pic
+                      ? myinfo[0].pic
+                      : "/icon.png"
+                  }
                   sx={{ width: 140, height: 140 }}
                 />
                 <Stack

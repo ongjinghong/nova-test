@@ -30,7 +30,7 @@
     "icon": ["icons/icon.ico"],
     "windows": {
       "nsis": {
-        "installMode": "currentUser"
+        "template": "./custom_nsis.nsi"
       },
       "certificateThumbprint": "560e14af121117d49b79007e67b3af48b8896810",
       "digestAlgorithm": "sha256",

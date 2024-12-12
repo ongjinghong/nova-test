@@ -28,11 +28,19 @@ export const FetchProfileData = ({ children }) => {
     };
 
     const fetchProfileInfo = async (token) => {
-      const graphResponse = await getProfile(token);
-      setProfileData((prevState) => ({
-        ...prevState,
-        profile: graphResponse,
-      }));
+      try {
+        const graphResponse = await getProfile(token);
+        setProfileData((prevState) => ({
+          ...prevState,
+          profile: graphResponse,
+        }));
+      } catch (error) {
+        console.error("Error fetching profile information:", error);
+        setProfileData((prevState) => ({
+          ...prevState,
+          profile: null,
+        }));
+      }
     };
 
     const fetchProfilePic = async (token) => {
@@ -46,10 +54,6 @@ export const FetchProfileData = ({ children }) => {
         }));
       } else if (photoResponse == null) {
         console.log("Failed to fetch photo", photoResponse?.statusText);
-        setProfileData((prevState) => ({
-          ...prevState,
-          picture: "../../public/icon.png",
-        }));
       }
     };
 
@@ -84,7 +88,9 @@ export const FetchProfileData = ({ children }) => {
       fetchType(token);
     };
 
-    fetchData();
+    if (accounts.length > 0) {
+      fetchData();
+    }
   }, [instance, accounts]);
 
   return (
