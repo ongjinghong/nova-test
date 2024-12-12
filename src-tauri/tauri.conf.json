@@ -31,7 +31,10 @@
     "windows": {
       "nsis": {
         "installMode": "currentUser"
-      }
+      },
+      "certificateThumbprint": "560e14af121117d49b79007e67b3af48b8896810",
+      "digestAlgorithm": "sha256",
+      "timestampUrl": "http://timestamp.comodoca.com"
     }
   }
 }
