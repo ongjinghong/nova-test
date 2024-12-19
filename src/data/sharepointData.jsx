@@ -3,7 +3,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { Box, CircularProgress, Typography } from "@mui/material";
 
-import { loginRequest } from "../config/azureAuth";
+import { useProfileData } from "./profileData";
 
 // Create Context for each SharePoint data
 const SharePointContext = createContext();
@@ -19,7 +19,7 @@ const cityMapping = {
 
 export const FetchSharepointData = ({ children }) => {
   const { instance, accounts } = useMsal();
-  const [token, setToken] = useState(null);
+  const { token } = useProfileData();
   const [loadingCommitment, setLoadingCommitment] = useState(true);
   const [loadingSubmission, setLoadingSubmission] = useState(true);
   const [loadingTarget, setLoadingTarget] = useState(true);
@@ -69,18 +69,7 @@ export const FetchSharepointData = ({ children }) => {
     announcement: "%7B7218990f-af71-4508-b2fa-454540b2c748%7D",
   };
 
-  const getAccessToken = async () => {
-    const request = {
-      loginRequest,
-      account: accounts[0],
-    };
-
-    const response = await instance.acquireTokenSilent(request);
-    setToken(response.accessToken);
-    return response.accessToken;
-  };
-
-  const fetchCommitmentData = async (token) => {
+  const fetchCommitmentData = async () => {
     const listIds = sharepointListID.commitment;
     const maxItem = "500";
 
@@ -169,7 +158,7 @@ export const FetchSharepointData = ({ children }) => {
     }
   };
 
-  const fetchSubmissionData = async (token) => {
+  const fetchSubmissionData = async () => {
     const listIds = sharepointListID.submission;
     const maxItem = "500";
 
@@ -236,7 +225,7 @@ export const FetchSharepointData = ({ children }) => {
     }
   };
 
-  const fetchTargetData = async (token) => {
+  const fetchTargetData = async () => {
     const listIds = sharepointListID.target;
     const maxItem = "200";
 
@@ -287,7 +276,7 @@ export const FetchSharepointData = ({ children }) => {
     }
   };
 
-  const fetchNewsData = async (token) => {
+  const fetchNewsData = async () => {
     const listId = sharepointListID.news;
     const maxItem = "40";
     const sort = "PublishDate";
@@ -323,7 +312,7 @@ export const FetchSharepointData = ({ children }) => {
     }
   };
 
-  const fetchAnnouncementData = async (token) => {
+  const fetchAnnouncementData = async () => {
     const listId = sharepointListID.announcement;
     const maxItem = "5";
 
@@ -389,7 +378,7 @@ export const FetchSharepointData = ({ children }) => {
     }
   };
 
-  const fetchStarsData = async (token) => {
+  const fetchStarsData = async () => {
     const listIds = sharepointListID.stars;
     setLoadingStars(true);
 
@@ -461,7 +450,7 @@ export const FetchSharepointData = ({ children }) => {
     }
   };
 
-  const fetchMemberData = async (token) => {
+  const fetchMemberData = async () => {
     const userListId = sharepointListID.member;
     const flexListId = sharepointListID.flex_member;
     const maxItem = "1000";
@@ -691,26 +680,27 @@ export const FetchSharepointData = ({ children }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const token = await getAccessToken();
-
-      fetchCommitmentData(token);
-      fetchSubmissionData(token);
-      fetchTargetData(token);
-      fetchStarsData(token);
-      fetchNewsData(token);
-      fetchAnnouncementData(token);
-      fetchMemberData(token);
+      if (!token) {
+        console.error("Token not found");
+        return;
+      }
+      fetchCommitmentData();
+      fetchSubmissionData();
+      fetchTargetData();
+      fetchStarsData();
+      fetchNewsData();
+      fetchAnnouncementData();
+      fetchMemberData();
     };
 
     fetchData();
-  }, [instance, accounts]);
+  }, [instance, accounts, token]);
 
   return (
     <SharePointContext.Provider
       value={{
         listData,
         token,
-        getAccessToken,
         fetchCommitmentData,
         addCommitment,
         updateCommitment,

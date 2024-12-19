@@ -2,6 +2,7 @@ import { useMsal } from "@azure/msal-react";
 import { createContext, useContext, useState, useEffect } from "react";
 
 import { getProfile, getProfilePic, getType } from "./graphData";
+import { loginRequest } from "../config/azureAuth";
 
 // Create Context for each SharePoint data
 const ProfileContext = createContext();
@@ -14,16 +15,21 @@ export const FetchProfileData = ({ children }) => {
     picture: null,
     manager: null,
     type: "",
+    token: null,
   });
 
   useEffect(() => {
     const getAccessToken = async () => {
       const request = {
-        scopes: ["User.Read"],
+        loginRequest,
         account: accounts[0],
       };
 
       const response = await instance.acquireTokenSilent(request);
+      setProfileData((prevState) => ({
+        ...prevState,
+        token: response.accessToken,
+      }));
       return response.accessToken;
     };
 
