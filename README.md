@@ -59,7 +59,7 @@
 
 ## How To Use
 
-You can [download](https://github.com/intel-innersource/applications.tools.intel-flex-nova/releases/tag/latest) and install the latest installable exe of NOVA app for Windows.
+You can [download](https://github.com/intel-innersource/applications.tools.intel-flex-nova/releases/latest) and install the latest installable exe of NOVA app for Windows.
 
 > **Note**
 > Currently only tested on Windows
