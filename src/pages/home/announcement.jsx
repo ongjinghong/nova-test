@@ -68,6 +68,9 @@ function Announcement() {
             boxShadow: "0px 4px 20px rgba(0,0,0,0.15)",
             transition: "box-shadow 0.3s ease",
             "&:hover": { boxShadow: "0px 6px 25px rgba(0,0,0,0.2)" },
+            "@media screen and (min-width: 1100px)": {
+                  height: "25vh",
+              },
           }}
         >
           <Fade in={checked}>
@@ -92,6 +95,7 @@ function Announcement() {
                 >
                   {card.description}
                 </Typography>
+                {card.starttime !== "NA" && card.endtime != "NA" && (
                 <Typography
                   variant="body1"
                   component="div"
@@ -101,6 +105,7 @@ function Announcement() {
                   {card.starttime} <b>To: </b>
                   {card.endtime}
                 </Typography>
+                )}
                 {card.link1 && (
                   <Button
                     variant="contained"
@@ -109,7 +114,7 @@ function Announcement() {
                     onClick={() => {
                       openURL(card.link1_url);
                     }}
-                    sx={{ marginRight: "7px", minWidth: "100px" }}
+                    sx={{ marginRight: "7px", minWidth: "100px", marginTop:"3%" }}
                   >
                     {card.link1}
                   </Button>
@@ -122,7 +127,7 @@ function Announcement() {
                     onClick={() => {
                       openURL(card.link2_url);
                     }}
-                    sx={{ marginRight: "7px", minWidth: "100px" }}
+                    sx={{ marginRight: "7px", minWidth: "100px", marginTop:"3%" }}
                   >
                     {card.link2}
                   </Button>
