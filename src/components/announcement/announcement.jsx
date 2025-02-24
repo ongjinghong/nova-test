@@ -104,6 +104,8 @@ function Announcement() {
                     color: "text.secondary",
                     whiteSpace: "pre-line",
                     mt: 2,
+                    overflow: "auto",
+                    maxHeight: 110,
                   }}
                 >
                   {announcement.Description}
