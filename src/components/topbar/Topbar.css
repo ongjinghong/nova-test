@@ -1,24 +1,31 @@
 .content-header {
   display: flex;
-  justify-content: right;
-  margin-right: 25px;
+  justify-content: space-between;
+
+  padding-top: 8px;
+  padding-left: 15px;
+  padding-right: 25px;
   margin-bottom: 10px;
+}
+
+.header-profile {
+  display: flex;
+  flex-direction: row;
 }
 
 .header-greetings {
   display: flex;
   align-items: flex-end;
   flex-direction: column;
-  margin-top: 10px;
-  margin-left: 15px;
 }
 
-.header-theme,
-.header-notifications {
-  margin-top: 12px;
+.header-action,
+.header-theme {
+  align-content: center;
+  margin-right: 12px;
 }
 
 .header-pic {
-  margin-top: 14px;
+  margin-top: 4px;
   margin-left: 10px;
 }

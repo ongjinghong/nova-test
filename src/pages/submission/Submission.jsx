@@ -1,125 +1,108 @@
-import { useState, useEffect } from "react";
-import { Box, Chip, Stack, Tooltip } from "@mui/material";
+import React, { useEffect } from "react";
+import { Box, Button, Fab } from "@mui/material";
 import Grid from "@mui/material/Grid2";
+import AddIcon from "@mui/icons-material/Add";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
 
 import "./Submission.css";
-import HighlightedCard from "./HighlightedCard";
-import MonthlySubmissionBarChart from "./MonthlySubmissionBarChart";
+import useAppStore from "../../stores/AppStore";
+import useSubmissionStore from "../../stores/SubmissionStore";
+import SubmissionFilter from "./SubmissionFilter";
+import SubmissionTotalStatCard from "./SubmissionTotalStatCard";
+import SubmissionParticipantRatioStatCard from "./SubmissionParticipantRatioStatCard";
 import SubmissionCategoryBarChart from "./SubmissionCategoryBarChart";
-import CustomizedDataGrid from "./SubmissionDetails";
-import { useSharePointData } from "../../data/sharepointData";
-import TotalStatCard from "./TotalStatCard";
-import RatioStatCard from "./RatioStatCard";
-import SitePieChart from "./SitePieChart";
-import FilterPanel from "../../components/filter/filter";
-import { exportCSV } from "../../utils/SubmissionUtils";
+import SubmissionMonthlyBarChart from "./SubmissionMonthlyBarChart";
+import SubmissionDetailsTable from "./SubmissionDetailsTable";
+import SubmissionForm from "./SubmissionForm";
+import SubmissionDetailsWindow from "./SubmissionDetailsWindow";
+import SubmissionAcceptanceRateCard from "./SubmissionAcceptanceRateCard";
+import { exportSubmissionCSV } from "../../utils/Helpers";
 
 const Submission = () => {
-  const { listData } = useSharePointData();
-  const { submission, myinfo, member } = listData;
-  const [filteredSubmission, setFilteredSubmission] = useState(submission);
-  const [filteredMember, setFilteredMember] = useState(member);
-  const [managerFilter, setManagerFilter] = useState([]);
+  const currentYear = useAppStore((state) => state.currentYear);
+  const appMode = useAppStore((state) => state.appMode);
+  const lists = useSubmissionStore((state) => state.lists);
+  const getSubmissions = useSubmissionStore((state) => state.getSubmissions);
+  const submissionDetailsOpen = useSubmissionStore(
+    (state) => state.submissionDetailsOpen
+  );
+  const submissionFormOpen = useSubmissionStore(
+    (state) => state.submissionFormOpen
+  );
 
-  const handleExportClick = () => {
-    exportCSV(filteredSubmission, member);
+  useEffect(() => {
+    lists.forEach(async (item) => {
+      if (item.year !== currentYear && item.data.length === 0) {
+        await getSubmissions(item.year);
+      }
+    });
+  }, []);
+
+  const handleAddClick = () => {
+    useSubmissionStore.getState().openSubmissionForm();
+    useSubmissionStore.getState().resetSubmissionFormPage();
+    useSubmissionStore.getState().setSubmissionFormType("Add");
   };
 
-  const handleManagerViewClick = () => {
-    const managerName = myinfo[0].name;
-    // const managerName = "Koo, Nyuk Kin";
-    const lookupIds = member
-      .filter((m) => m.manager === managerName)
-      .map((m) => m.lookupid);
-
-    setManagerFilter(lookupIds);
+  const handleDownloadClick = () => {
+    exportSubmissionCSV();
   };
 
   return (
     <Box className="submission-container">
       <Box className="submission-filter">
-        <Stack
-          direction="row"
-          spacing={1}
-          sx={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          <Stack direction="row" spacing={0.5} sx={{ flexGrow: 1 }}>
-            <FilterPanel
-              data={submission}
-              setData={setFilteredSubmission}
-              memberData={member}
-              setMemberData={setFilteredMember}
-              managerMode={managerFilter}
-            />
-          </Stack>
-
-          {myinfo[0].role.includes("Manager") ||
-            (myinfo[0].role.includes("Innovation") && (
-              <>
-                <Tooltip title="View your direct reports">
-                  <Chip label="Manager View" onClick={handleManagerViewClick} />
-                </Tooltip>
-                <Tooltip title="Export Innovation Details">
-                  <Chip label="Download CSV" onClick={handleExportClick} />
-                </Tooltip>
-              </>
-            ))}
-        </Stack>
+        <FilterAltIcon />
+        <SubmissionFilter />
+        <Box display="flex" flexDirection="column" width="fit-content">
+          <Button
+            className="form-button"
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleAddClick}
+            sx={{ minWidth: "fit-content" }}
+          >
+            Add {currentYear} Submission
+          </Button>
+        </Box>
       </Box>
       <Box className="submission-content">
         <Grid container spacing={2} columns={12}>
-          <Grid size={9}>
-            <Grid container spacing={2} columns={9}>
-              <Grid size={3}>
-                <TotalStatCard
-                  data={filteredSubmission.filter(
-                    (submission) => submission.list_id !== "1"
-                  )}
-                />
-              </Grid>
-              <Grid size={3}>
-                <RatioStatCard
-                  data={filteredSubmission.filter(
-                    (submission) => submission.list_id !== "1"
-                  )}
-                  member={filteredMember}
-                />
-              </Grid>
-              <Grid size={3}>
-                <HighlightedCard />
-              </Grid>
-              <Grid size={6}>
-                <SubmissionCategoryBarChart
-                  data={filteredSubmission.filter(
-                    (submission) => submission.list_id !== "1"
-                  )}
-                />
-              </Grid>
-              <Grid size={3}>
-                <MonthlySubmissionBarChart
-                  data={filteredSubmission.filter(
-                    (submission) => submission.list_id !== "1"
-                  )}
-                />
-              </Grid>
-            </Grid>
+          <Grid size={4}>
+            <SubmissionTotalStatCard />
           </Grid>
-          <Grid size={3}>
-            <SitePieChart
-              data={filteredSubmission.filter(
-                (submission) => submission.list_id !== "1"
-              )}
-            />
+          <Grid size={4}>
+            <SubmissionParticipantRatioStatCard />
+          </Grid>
+          <Grid size={4}>
+            <SubmissionAcceptanceRateCard />
+          </Grid>
+          <Grid size={7}>
+            <SubmissionCategoryBarChart />
+          </Grid>
+          <Grid size={5}>
+            <SubmissionMonthlyBarChart />
           </Grid>
           <Grid size={12}>
-            <CustomizedDataGrid data={filteredSubmission} />
+            <SubmissionDetailsTable />
           </Grid>
         </Grid>
       </Box>
+
+      {(appMode === "Innovation" || appMode === "Manager") && (
+        <Fab
+          variant="extended"
+          color="secondary"
+          sx={{ position: "fixed", bottom: 50, right: 30 }}
+          onClick={handleDownloadClick}
+        >
+          <FileDownloadIcon />
+          Download CSV
+        </Fab>
+      )}
+
+      {submissionDetailsOpen && <SubmissionDetailsWindow />}
+      {submissionFormOpen && <SubmissionForm />}
     </Box>
   );
 };

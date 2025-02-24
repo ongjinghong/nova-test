@@ -1,18 +1,22 @@
 import { Button, Box, Typography } from "@mui/material";
-import { useMsal } from "@azure/msal-react";
 
-import { loginRequest } from "../../config/azureAuth";
 import "./welcome.css";
-import backgroundImage from "../../assets/welcome.webp";
 import appIcon from "../../assets/icon.png";
+import backgroundImage from "../../assets/welcome.webp";
+import useAzureStore from "../../stores/AzureStore";
 
 export default function Welcome() {
-  const { instance } = useMsal();
+  const msalInstance = useAzureStore((state) => state.msalInstance);
+  const apiPermissions = useAzureStore((state) => state.apiPermissions);
 
   const handleLogin = () => {
-    instance.loginRedirect(loginRequest).catch((e) => {
-      console.error(e);
-    });
+    msalInstance
+      .loginRedirect({
+        scopes: apiPermissions,
+      })
+      .catch((e) => {
+        console.error(e);
+      });
   };
 
   return (

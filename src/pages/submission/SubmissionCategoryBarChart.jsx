@@ -1,60 +1,54 @@
-import * as React from "react";
+import React, { useEffect } from "react";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { BarChart } from "@mui/x-charts/BarChart";
+
+import useAppStore from "../../stores/AppStore";
+import useSubmissionStore from "../../stores/SubmissionStore";
 import useColorConfig from "../../config/colorConfig";
 
-export default function SubmissionCategoryBarChart({ data }) {
+export default function SubmissionCategoryBarChart() {
+  const data = useSubmissionStore((state) => state.filteredSubmissions);
+  const constants = useAppStore((state) => state.constants);
+  const { categories, statuses } = constants;
   const { statusColors } = useColorConfig();
-  const categories = [
-    "Conferences",
-    "IDF",
-    "Initiatives",
-    "Micro-Innovation",
-    "Open Source",
-    "Knowledge Sharing",
-  ];
-  const statuses = [
-    "NEW",
-    "WIP",
-    "Submitted",
-    "Accepted",
-    "Rejected",
-    "Cancelled",
-  ];
-  const statusCategoryCount = {};
+  const statusCategorySubmissions = useSubmissionStore(
+    (state) => state.statusCategorySubmissions
+  );
 
-  statuses.forEach((status) => {
-    statusCategoryCount[status] = categories.reduce((acc, category) => {
-      acc[category] = 0;
-      return acc;
-    }, {});
-  });
+  useEffect(() => {
+    const statusCategoryCount = {};
 
-  data.forEach((item) => {
-    if (
-      statusCategoryCount.hasOwnProperty(item.status) &&
-      statusCategoryCount[item.status].hasOwnProperty(item.category)
-    ) {
-      statusCategoryCount[item.status][item.category]++;
-    }
-  });
+    statuses.forEach((status) => {
+      statusCategoryCount[status] = categories.reduce((acc, category) => {
+        acc[category] = 0;
+        return acc;
+      }, {});
+    });
 
-  const result = {};
-  statuses.forEach((status) => {
-    result[status] = categories.map(
-      (category) => statusCategoryCount[status][category]
-    );
-  });
+    data.forEach((item) => {
+      if (
+        statusCategoryCount.hasOwnProperty(item.Status) &&
+        statusCategoryCount[item.Status].hasOwnProperty(item.Category)
+      ) {
+        statusCategoryCount[item.Status][item.Category]++;
+      }
+    });
 
-  const totalSum = Object.values(result)
-    .flat() // Flatten the arrays for each status
-    .reduce((sum, num) => sum + num, 0); // Sum all the numbers
+    const newResult = {};
+    statuses.forEach((status) => {
+      newResult[status] = categories.map(
+        (category) => statusCategoryCount[status][category]
+      );
+    });
+
+    useSubmissionStore.getState().setStatusCategorySubmissions(newResult);
+  }, [data, categories, statuses]);
 
   return (
     <Card variant="outlined">
-      <CardContent>
+      <CardContent sx={{ padding: 1 }}>
         <Typography component="h2" variant="subtitle2" gutterBottom>
           Category Submission Chart
         </Typography>
@@ -70,10 +64,10 @@ export default function SubmissionCategoryBarChart({ data }) {
               valueFormatter: (code, context) =>
                 context.location === "tick"
                   ? `${code}(${
-                      data.filter((item) => item.category === code).length
+                      data.filter((item) => item.Category === code).length
                     })`
                   : `${code} (Total: ${
-                      data.filter((item) => item.category === code).length
+                      data.filter((item) => item.Category === code).length
                     })`,
             },
           ]}
@@ -81,38 +75,38 @@ export default function SubmissionCategoryBarChart({ data }) {
             {
               id: "new",
               label: "New",
-              data: result["NEW"],
+              data: statusCategorySubmissions["NEW"],
               stack: "A",
             },
             {
               id: "wip",
               label: "WIP",
-              data: result["WIP"],
+              data: statusCategorySubmissions["WIP"],
               stack: "A",
             },
             {
               id: "submitted",
               label: "Submitted",
-              data: result["Submitted"],
-              stack: "A",
+              data: statusCategorySubmissions["Submitted"],
+              stack: "B",
             },
             {
               id: "accepted",
               label: "Accepted",
-              data: result["Accepted"],
-              stack: "A",
+              data: statusCategorySubmissions["Accepted"],
+              stack: "B",
             },
             {
               id: "rejected",
               label: "Rejected",
-              data: result["Rejected"],
-              stack: "A",
+              data: statusCategorySubmissions["Rejected"],
+              stack: "B",
             },
             {
               id: "cancelled",
               label: "Cancelled",
-              data: result["Cancelled"],
-              stack: "A",
+              data: statusCategorySubmissions["Cancelled"],
+              stack: "C",
             },
           ]}
           height={250}

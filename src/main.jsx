@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React from "react";
 import ReactDOM from "react-dom/client";
 import { PublicClientApplication } from "@azure/msal-browser";
 import { MsalProvider } from "@azure/msal-react";
-// theme
+
 import "./assets/fonts/fonts.css";
-
-// local import
 import App from "./App";
-import { msalConfig } from "./config/azureAuth";
+import useAzureStore from "./stores/AzureStore";
 
-const msalInstance = new PublicClientApplication(msalConfig);
+const msalInstance = new PublicClientApplication(
+  useAzureStore.getState().msalConfig
+);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   // <React.StrictMode>

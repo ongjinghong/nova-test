@@ -1,333 +1,284 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
-  IconButton,
-  Stack,
+  Divider,
   Step,
   StepLabel,
   Stepper,
-  Typography,
   TextField,
+  Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import CloseIcon from "@mui/icons-material/Close";
 import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
-import { styled } from "@mui/system";
 
-import { useSharePointData } from "../../data/sharepointData";
-import FormStep from "./TargetStepForm";
+import useAppStore from "../../stores/AppStore";
+import useMemberStore from "../../stores/MemberStore";
+import useTargetStore from "../../stores/TargetStore";
 
-export default function TargetForm({ open, setOpen, data, year }) {
-  const steps = ["Q1", "Q2", "Q3", "Q4"];
-  const { token, listData, fetchTargetData, addTarget, updateTarget } =
-    useSharePointData();
-  const { myinfo } = listData;
-  const [activeStep, setActiveStep] = useState(-1);
-  const [defaultTargetData, setDefaultTargetData] = useState({
-    Conference: 0,
-    IDF: 0,
-    POC_x002f_Pitching: 0,
-    Micro_x002d_Innovation: 0,
-    OpenSource: 0,
-    Site: myinfo[0].site,
-    Domain: myinfo[0].domain,
-  });
-  const [newTargetData, setNewTargetData] = useState([
-    {
-      ...defaultTargetData,
-      Quarter: "1",
-    },
-    {
-      ...defaultTargetData,
-      Quarter: "2",
-    },
-    {
-      ...defaultTargetData,
-      Quarter: "3",
-    },
-    {
-      ...defaultTargetData,
-      Quarter: "4",
-    },
-  ]);
-  const [updateTargetID, setUpdateTargetID] = useState([]);
-  const [isTimeoutCleared, setIsTimeoutCleared] = useState(false);
-  const [countdown, setCountdown] = useState(10);
-  const timeoutIdRef = useRef(null);
-  const intervalIdRef = useRef(null);
+export default function TargetForm() {
+  const { quarters } = useAppStore((state) => state.constants);
+  const loginMember = useMemberStore((state) => state.loginMember);
+  const targets = useTargetStore((state) => state.targets);
+  const targetFormOpen = useTargetStore((state) => state.targetFormOpen);
+  const targetFormType = useTargetStore((state) => state.targetFormType);
+  const targetsInput = useTargetStore((state) => state.targetsInput);
+  const targetFormPage = useTargetStore((state) => state.targetFormPage);
+  const handleFormClose = useTargetStore((state) => state.closeTargetForm);
 
   useEffect(() => {
-    if (open) {
-      setActiveStep(0);
-      if (data && data.length === 4) {
-        const updatedTargetData = data.map((item, index) => ({
-          ...defaultTargetData,
-          Conference: item.conferences || defaultTargetData.Conference,
-          IDF: item.idf || defaultTargetData.IDF,
-          POC_x002f_Pitching:
-            item.initiatives || defaultTargetData.POC_x002f_Pitching,
-          Micro_x002d_Innovation:
-            item.microinnovation || defaultTargetData.Micro_x002d_Innovation,
-          OpenSource: item.opensource || defaultTargetData.OpenSource,
-          Site: item.site || defaultTargetData.Site,
-          Domain: item.domain || defaultTargetData.Domain,
-          Quarter: `${index + 1}`,
-        }));
-        const updatedTargetID = data.map((item) => item.list_id);
-        setNewTargetData(updatedTargetData);
-        setUpdateTargetID(updatedTargetID);
-      }
-    } else {
-      setActiveStep(-1);
-    }
-  }, [open, data, defaultTargetData]);
-
-  const startCountdown = () => {
-    setCountdown(10);
-    intervalIdRef.current = setInterval(() => {
-      setCountdown((prevCountdown) => {
-        if (prevCountdown <= 1) {
-          clearInterval(intervalIdRef.current);
-          return 0;
-        }
-        return prevCountdown - 1;
-      });
-    }, 1000);
-  };
-
-  const handleFormClose = (refresh) => {
-    setOpen(false);
-    setNewTargetData([
-      { ...defaultTargetData, Quarter: "1" },
-      { ...defaultTargetData, Quarter: "2" },
-      { ...defaultTargetData, Quarter: "3" },
-      { ...defaultTargetData, Quarter: "4" },
-    ]);
-    clearTimeout(timeoutIdRef.current);
-    clearInterval(intervalIdRef.current);
-    if (refresh) {
-      fetchTargetData(token);
-    }
-  };
-
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
-
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  const handleSubmit = async () => {
-    if (data.length == 0) {
-      console.log("add new target", newTargetData);
-      const response = await addTarget(token, newTargetData, year);
-      if (response.every((res) => res === "Item created successfully")) {
-        setActiveStep(steps.length);
-        startCountdown();
-        timeoutIdRef.current = setTimeout(() => {
-          if (!isTimeoutCleared) {
-            fetchTargetData(token);
-          }
-        }, 10000); // 10000 milliseconds = 10 seconds
-      }
-    } else {
-      console.log("update Target", newTargetData);
-      console.log("update ID", updateTargetID);
-      const response = await updateTarget(
-        token,
-        updateTargetID,
-        newTargetData,
-        year
-      );
-      if (response.every((res) => res === "Item updated successfully")) {
-        setActiveStep(steps.length);
-        startCountdown();
-        timeoutIdRef.current = setTimeout(() => {
-          if (!isTimeoutCleared) {
-            fetchTargetData(token);
-          }
-        }, 10000); // 10000 milliseconds = 10 seconds
+    if (targetFormOpen) {
+      useTargetStore.getState().clearTargetInput();
+      if (targetFormType === "Add") {
+        quarters.map((quarter) => {
+          const newTarget = {
+            ...useTargetStore.getState().targetInputTemplate,
+          };
+          newTarget.Quarter = quarter;
+          newTarget.Email = loginMember.Email;
+          newTarget.Site = loginMember.Site;
+          newTarget.Domain = loginMember.Domain;
+          useTargetStore.getState().addTargetInput(newTarget);
+        });
+      } else if (targetFormType === "Update") {
+        targets
+          .filter(
+            (target) =>
+              target.Year === 2025 &&
+              target.Site === loginMember.Site &&
+              target.Domain === loginMember.Domain
+          )
+          .map((target) => {
+            const newTarget = {
+              ...useTargetStore.getState().targetInputTemplate,
+            };
+            newTarget.id = target.ListID;
+            newTarget.Quarter = target.Quarter;
+            newTarget.Site = target.Site;
+            newTarget.Domain = target.Domain;
+            newTarget.Conference = target.Conference;
+            newTarget.IDF = target.IDF;
+            newTarget.POC_x002f_Pitching = target.POC_x002f_Pitching;
+            newTarget.Micro_x002d_Innovation = target.Micro_x002d_Innovation;
+            newTarget.OpenSource = target.OpenSource;
+            useTargetStore.getState().addTargetInput(newTarget);
+          });
       }
     }
+  }, [targetFormOpen]);
+
+  const handleInputChange = (event, index, key) => {
+    useTargetStore.getState().updateTargetInput(index, key, event.target.value);
+  };
+
+  const handleNextPage = () => {
+    useTargetStore.getState().nextTargetFormPage();
+  };
+
+  const handlePreviousPage = () => {
+    useTargetStore.getState().previousTargetFormPage();
+  };
+
+  const handleSubmit = () => {
+    if (targetFormType === "Add") {
+      useTargetStore.getState().addTarget();
+    } else if (targetFormType === "Update") {
+      useTargetStore.getState().updateTarget();
+    }
+    useTargetStore.getState().closeTargetForm();
   };
 
   return (
-    <Dialog open={open} onClose={() => handleFormClose(false)} maxWidth="sm">
-      <IconButton
-        aria-label="close"
-        onClick={() => handleFormClose(false)}
-        sx={(theme) => ({
-          position: "absolute",
-          right: 8,
-          top: 8,
-          color: theme.palette.grey[700],
-        })}
-      >
-        <CloseIcon />
-      </IconButton>
-      <DialogContent>
-        <Grid container columns={12}>
-          <Grid
-            size={12}
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              width: "100%",
-              backgroundColor: { xs: "transparent", sm: "background.default" },
-              alignItems: "start",
-              pt: 4,
-              px: 2,
-              gap: 4,
-            }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                alignItems: "center",
-                flexGrow: 1,
-                width: "100%",
-              }}
-            >
-              <Stepper
-                id="target-stepper"
-                activeStep={activeStep}
-                sx={{ width: "100%", height: 40 }}
-              >
-                {steps.map((label) => (
-                  <Step
-                    sx={{
-                      ":first-of-type": { pl: 0 },
-                      ":last-child": { pr: 2 },
-                    }}
-                    key={label}
-                  >
-                    <StepLabel>{label}</StepLabel>
-                  </Step>
-                ))}
-              </Stepper>
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                flexGrow: 1,
-                width: "100%",
-                gap: { xs: 5, md: "none" },
-              }}
-            >
-              {activeStep === steps.length && (
-                <Stack
-                  spacing={2}
-                  useFlexGap
-                  sx={{ alignItems: "center", textAlign: "center" }}
-                >
-                  <Typography variant="h1">✅</Typography>
-                  <Typography variant="h5">
-                    Thank you for your {data ? "update" : "Target submission"}!
-                  </Typography>
-
-                  <Typography
-                    variant="body1"
-                    sx={{ color: "text.secondary", maxWidth: "500px" }}
-                  >
-                    {year} Target for {newTargetData[0].Site}{" "}
-                    {newTargetData[0].Domain} <br />
-                    has been {data ? "updated" : "added"}.
-                    <br />
-                    <br />
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    onClick={() => handleFormClose(true)}
-                  >
-                    {countdown > 0
-                      ? `Back to Target Page (${countdown})`
-                      : "Back to Target Page"}
-                  </Button>
-                </Stack>
-              )}
-              {activeStep == 0 && (
-                <FormStep
-                  quarter={0}
-                  newData={newTargetData}
-                  setNewData={setNewTargetData}
-                />
-              )}
-              {activeStep == 1 && (
-                <FormStep
-                  quarter={1}
-                  newData={newTargetData}
-                  setNewData={setNewTargetData}
-                />
-              )}
-              {activeStep == 2 && (
-                <FormStep
-                  quarter={2}
-                  newData={newTargetData}
-                  setNewData={setNewTargetData}
-                />
-              )}
-              {activeStep == 3 && (
-                <FormStep
-                  quarter={3}
-                  newData={newTargetData}
-                  setNewData={setNewTargetData}
-                />
-              )}
-            </Box>
+    <Dialog
+      open={targetFormOpen}
+      onClose={handleFormClose}
+      fullWidth
+      maxWidth="xs"
+      slotProps={{
+        paper: {
+          component: "form",
+        },
+      }}
+      sx={{ paddingY: 0 }}
+    >
+      <DialogContent sx={{ paddingY: 6 }}>
+        <Stepper
+          id="submission-stepper"
+          activeStep={targetFormPage}
+          sx={{ marginBottom: 4 }}
+        >
+          {quarters.map((quarter) => (
+            <Step key={quarter}>
+              <StepLabel>{quarter}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+        <Grid
+          container
+          columns={12}
+          rowSpacing={1}
+          columnSpacing={4}
+          sx={{ paddingX: 2 }}
+        >
+          <Grid size={4} sx={{ alignContent: "center" }}>
+            <Typography variant="body1">Site</Typography>
+          </Grid>
+          <Grid size={8}>
+            <TextField
+              type="text"
+              size="small"
+              disabled
+              fullWidth
+              value={loginMember["Site"]}
+            />
+          </Grid>
+          <Grid size={4} sx={{ alignContent: "center" }}>
+            <Typography variant="body1">Domain</Typography>
+          </Grid>
+          <Grid size={8}>
+            <TextField
+              type="text"
+              size="small"
+              disabled
+              fullWidth
+              value={loginMember["Domain"]}
+            />
           </Grid>
         </Grid>
-      </DialogContent>
-      {activeStep !== steps.length ? (
-        <DialogActions>
-          <Box
-            sx={[
-              {
-                display: "flex",
-                flexDirection: { xs: "column-reverse", sm: "row" },
-                alignItems: "end",
-                flexGrow: 1,
-                gap: 1,
-                pt: 2,
-                px: 4,
-                pb: 4,
-              },
-              activeStep !== 0
-                ? { justifyContent: "space-between" }
-                : { justifyContent: "flex-end" },
-            ]}
-          >
-            {activeStep !== 0 && (
-              <Button
-                startIcon={<ChevronLeftRoundedIcon />}
-                onClick={handleBack}
-                variant="text"
-                sx={{ display: { xs: "none", sm: "flex" } }}
+
+        <Divider sx={{ marginY: 4 }} />
+
+        <Box sx={{ justifyItems: "center" }}>
+          {targetsInput
+            .filter((input, index) => index === targetFormPage)
+            .map((input) => (
+              <Grid
+                key={input.Quarter}
+                container
+                rowSpacing={2}
+                columnSpacing={4}
+                columns={12}
+                sx={{ width: "75%", justifyContent: "center" }}
               >
-                Previous
-              </Button>
-            )}
-            <Button
-              variant="contained"
-              endIcon={<ChevronRightRoundedIcon />}
-              onClick={
-                activeStep === steps.length - 1 ? handleSubmit : handleNext
-              }
-              sx={{ width: "fit-content" }}
-            >
-              {activeStep === steps.length - 1 ? "Submit" : "Next"}
-            </Button>
-          </Box>
-        </DialogActions>
-      ) : null}
+                <Grid size={7} sx={{ alignContent: "center" }}>
+                  <Typography variant="body1">Conferences</Typography>
+                </Grid>
+                <Grid size={5}>
+                  <TextField
+                    type="number"
+                    size="small"
+                    fullWidth
+                    value={input.Conference}
+                    onChange={(event) =>
+                      handleInputChange(event, targetFormPage, "Conference")
+                    }
+                    slotProps={{ htmlInput: { min: 0, max: 25 } }}
+                  />
+                </Grid>
+
+                <Grid size={7} sx={{ alignContent: "center" }}>
+                  <Typography variant="body1">IDF</Typography>
+                </Grid>
+                <Grid size={5}>
+                  <TextField
+                    type="number"
+                    size="small"
+                    fullWidth
+                    value={input.IDF}
+                    onChange={(event) =>
+                      handleInputChange(event, targetFormPage, "IDF")
+                    }
+                    slotProps={{ htmlInput: { min: 0, max: 25 } }}
+                  />
+                </Grid>
+
+                <Grid size={7} sx={{ alignContent: "center" }}>
+                  <Typography variant="body1">Initiatives</Typography>
+                </Grid>
+                <Grid size={5}>
+                  <TextField
+                    type="number"
+                    size="small"
+                    fullWidth
+                    value={input.POC_x002f_Pitching}
+                    onChange={(event) =>
+                      handleInputChange(
+                        event,
+                        targetFormPage,
+                        "POC_x002f_Pitching"
+                      )
+                    }
+                    slotProps={{ htmlInput: { min: 0, max: 25 } }}
+                  />
+                </Grid>
+
+                <Grid size={7} sx={{ alignContent: "center" }}>
+                  <Typography variant="body1">Micro Innovation</Typography>
+                </Grid>
+                <Grid size={5}>
+                  <TextField
+                    type="number"
+                    size="small"
+                    fullWidth
+                    value={input.Micro_x002d_Innovation}
+                    onChange={(event) =>
+                      handleInputChange(
+                        event,
+                        targetFormPage,
+                        "Micro_x002d_Innovation"
+                      )
+                    }
+                    slotProps={{ htmlInput: { min: 0, max: 25 } }}
+                  />
+                </Grid>
+
+                <Grid size={7} sx={{ alignContent: "center" }}>
+                  <Typography variant="body1">Open Source</Typography>
+                </Grid>
+                <Grid size={5}>
+                  <TextField
+                    type="number"
+                    size="small"
+                    fullWidth
+                    value={input.OpenSource}
+                    onChange={(event) =>
+                      handleInputChange(event, targetFormPage, "OpenSource")
+                    }
+                    slotProps={{ htmlInput: { min: 0, max: 25 } }}
+                  />
+                </Grid>
+              </Grid>
+            ))}
+        </Box>
+      </DialogContent>
+
+      <DialogActions
+        sx={{
+          paddingX: 3,
+          justifyContent: "space-between",
+          marginBottom: 1,
+        }}
+      >
+        <Button
+          startIcon={<ChevronLeftRoundedIcon />}
+          variant="text"
+          onClick={handlePreviousPage}
+          disabled={targetFormPage === 0}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="text"
+          endIcon={<ChevronRightRoundedIcon />}
+          onClick={targetFormPage === 3 ? handleSubmit : handleNextPage}
+        >
+          {targetFormPage === 3 ? "Submit" : "Next"}{" "}
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 }

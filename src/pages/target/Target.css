@@ -1,6 +1,5 @@
 .target-container {
-  width: 100vw - 250px;
-  flex-grow: 1;
+  width: 100% - 250px;
   overflow-y: auto;
   margin-left: 25px;
   margin-right: 25px;
@@ -9,7 +8,8 @@
 
 .target-filter {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  height: 100%;
   margin-left: 0px !important;
   margin-bottom: 10px;
 }

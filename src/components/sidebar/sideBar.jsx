@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import {
   Box,
   Divider,
@@ -15,56 +16,31 @@ import {
   Flag,
   AppRegistration,
   Language,
-  Logout,
   Star,
   Feedback,
   BugReport,
   AllInclusive,
+  Groups,
+  EmojiEvents,
+  Construction,
 } from "@mui/icons-material";
-import { getVersion } from "@tauri-apps/api/app";
-import { useMsal } from "@azure/msal-react";
-import {} from "@tauri-apps/api";
 
 import "./sideBar.css";
-import * as shell from "@tauri-apps/plugin-shell";
 import appIcon from "../../assets/icon.png";
+import useAppStore from "../../stores/AppStore";
 
-export default function SideBar({ setPage }) {
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const { instance, accounts } = useMsal();
-  const [appVersion, setAppVersion] = useState("0.0.0");
-
-  const handleListItemClick = (index, page) => {
-    setSelectedIndex(index);
-    setPage(page);
-  };
-
-  const handleLogout = (logoutType) => {
-    if (logoutType === "popup") {
-      instance.logoutPopup({
-        postLogoutRedirectUri: "/",
-        mainWindowRedirectUri: "/",
-      });
-    } else if (logoutType === "redirect") {
-      instance.logoutRedirect({
-        postLogoutRedirectUri: "/",
-      });
-    }
-  };
+export default function SideBar() {
+  const version = useAppStore((state) => state.appVersion);
+  const pages = useAppStore((state) => state.constants.pages);
+  const currentPage = useAppStore((state) => state.currentPage);
+  const appReady = useAppStore((state) => state.appReady);
 
   useEffect(() => {
-    getVersion()
-      .then((version) => {
-        setAppVersion(version);
-      })
-      .catch((error) => {
-        console.error("Error fetching version:", error);
-      });
-  });
+    useAppStore.getState().getAppVersion();
+  }, []);
 
-  const openURL = async (page_url) => {
-    const url = page_url;
-    await shell.open(url);
+  const handlePageChange = (page) => {
+    useAppStore.getState().setCurrentPage(page);
   };
 
   return (
@@ -87,106 +63,86 @@ export default function SideBar({ setPage }) {
           >
             NOVA
           </Typography>
-          <Typography variant="caption">{appVersion}-ALPHA</Typography>
+          <Typography variant="caption">{version}-ALPHA</Typography>
         </Box>
         <Box className="sidebar-nav">
           <List>
-            <ListItem key="Home" disablePadding>
-              <ListItemButton
-                selected={selectedIndex === 0}
-                onClick={() => handleListItemClick(0, "Home")}
-              >
-                <ListItemIcon className="nav-icon">
-                  <Dashboard />
-                </ListItemIcon>
-                <ListItemText primary="Overview" />
-              </ListItemButton>
-            </ListItem>
-
-            <Divider className="track-divider" textAlign="left">
-              <Typography variant="caption" gutterBottom>
-                TRACKED DATA
-              </Typography>
-            </Divider>
-
-            <ListItem key="Commitment" disablePadding>
-              <ListItemButton
-                selected={selectedIndex === 2}
-                onClick={() => handleListItemClick(2, "Commitment")}
-              >
-                <ListItemIcon className="nav-icon">
-                  <Flag />
-                </ListItemIcon>
-                <ListItemText primary="Commitment" />
-              </ListItemButton>
-            </ListItem>
-            <ListItem key="Submission" disablePadding>
-              <ListItemButton
-                selected={selectedIndex === 3}
-                onClick={() => handleListItemClick(3, "Submission")}
-              >
-                <ListItemIcon className="nav-icon">
-                  <AppRegistration />
-                </ListItemIcon>
-                <ListItemText primary="Submission" />
-              </ListItemButton>
-            </ListItem>
-            <ListItem key="Target" disablePadding>
-              <ListItemButton
-                selected={selectedIndex === 4}
-                onClick={() => handleListItemClick(4, "Target")}
-              >
-                <ListItemIcon className="nav-icon">
-                  <Language />
-                </ListItemIcon>
-                <ListItemText primary="Target" />
-              </ListItemButton>
-            </ListItem>
-
-            <Divider className="helper-divider" textAlign="left">
-              <Typography variant="caption" gutterBottom>
-                INNOVATORS
-              </Typography>
-            </Divider>
-            <ListItem key="Innovation Stars" disablePadding>
-              <ListItemButton
-                selected={selectedIndex === 1}
-                onClick={() => handleListItemClick(1, "Innovation Stars")}
-              >
-                <ListItemIcon className="nav-icon">
-                  <Star />
-                </ListItemIcon>
-                <ListItemText primary="Innovation Stars" />
-              </ListItemButton>
-            </ListItem>
-            <ListItem key="FullSpectrum" disablePadding>
-              <ListItemButton
-                selected={selectedIndex === 5}
-                onClick={() => handleListItemClick(5, "FullSpectrum")}
-              >
-                <ListItemIcon className="nav-icon">
-                  <AllInclusive />
-                </ListItemIcon>
-                <ListItemText primary="Full Spectrum" />
-              </ListItemButton>
-            </ListItem>
+            {pages.map((page, index) => (
+              <Box key={page}>
+                <ListItem disablePadding>
+                  <ListItemButton
+                    disabled={!appReady || index >= 4}
+                    selected={currentPage === page}
+                    onClick={() => handlePageChange(page)}
+                  >
+                    <ListItemIcon className="nav-icon">
+                      {page === "Overview" && <Dashboard />}
+                      {page === "Commitment" && <Flag />}
+                      {page === "Submission" && <AppRegistration />}
+                      {page === "Target" && <Language />}
+                      {page === "Stars" && <Star />}
+                      {page === "FullSpectrum" && <AllInclusive />}
+                      {page === "Members" && <Groups />}
+                      {page === "Hall of Fames" && <EmojiEvents />}
+                      {page === "Tools/Techniques" && <Construction />}
+                    </ListItemIcon>
+                    <ListItemText primary={page} />
+                  </ListItemButton>
+                </ListItem>
+                {index === 0 && (
+                  <Divider
+                    className="track-divider"
+                    key="track-divider"
+                    textAlign="left"
+                    sx={{ opacity: 0.6, marginTop: "10px" }}
+                  >
+                    <Typography variant="caption" gutterBottom>
+                      DATA
+                    </Typography>
+                  </Divider>
+                )}
+                {index === 3 && (
+                  <Divider
+                    className="helper-divider"
+                    key="helper-divider"
+                    textAlign="left"
+                    sx={{ opacity: 0.6, marginTop: "10px" }}
+                  >
+                    <Typography variant="caption" gutterBottom>
+                      FLEX's
+                    </Typography>
+                  </Divider>
+                )}
+                {index === 6 && (
+                  <Divider
+                    className="helper-divider"
+                    key="helper-divider"
+                    textAlign="left"
+                    sx={{ opacity: 0.6, marginTop: "10px" }}
+                  >
+                    <Typography variant="caption" gutterBottom>
+                      LEARNING
+                    </Typography>
+                  </Divider>
+                )}
+              </Box>
+            ))}
           </List>
         </Box>
         <Box sx={{}}>
           <List
             sx={{
-              paddingLeft: "20px",
               width: "100%",
             }}
           >
             <ListItem key="Report" className="report-button" disablePadding>
               <ListItemButton
-                sx={{}}
                 onClick={() =>
-                  openURL(
+                  openUrl(
                     "https://github.com/intel-innersource/applications.tools.intel-flex-nova/issues/new?assignees=&labels=bug&template=bug_report.md&title=bug%3A+"
                   )
                 }
+                sx={{ paddingLeft: "35px" }}
               >
                 <ListItemIcon className="report-icon">
                   <BugReport fontSize="small" />
@@ -197,10 +153,11 @@ export default function SideBar({ setPage }) {
             <ListItem key="Feedback" className="feedback-button" disablePadding>
               <ListItemButton
                 onClick={() =>
-                  openURL(
+                  openUrl(
                     "https://github.com/intel-innersource/applications.tools.intel-flex-nova/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=feat%3A+"
                   )
                 }
+                sx={{ paddingLeft: "35px" }}
               >
                 <ListItemIcon className="feedback-icon">
                   <Feedback fontSize="small" />
@@ -208,14 +165,14 @@ export default function SideBar({ setPage }) {
                 <ListItemText className="feedback-text" primary="Feedback" />
               </ListItemButton>
             </ListItem>
-            <ListItem key="LogOut" className="logout-button" disablePadding>
+            {/* <ListItem key="LogOut" className="logout-button" disablePadding>
               <ListItemButton onClick={() => handleLogout("redirect")}>
                 <ListItemIcon className="logout-icon">
                   <Logout fontSize="small" />
                 </ListItemIcon>
                 <ListItemText className="logout-text" primary="Log Out" />
               </ListItemButton>
-            </ListItem>
+            </ListItem> */}
           </List>
         </Box>
       </Box>

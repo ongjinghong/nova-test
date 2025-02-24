@@ -1,6 +1,5 @@
 .submission-container {
-  width: 100vw - 250px;
-  flex-grow: 1;
+  width: 100% - 250px;
   overflow-y: auto;
   margin-left: 25px;
   margin-right: 25px;
@@ -9,9 +8,14 @@
 
 .submission-filter {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  height: 100%;
   margin-left: 0px !important;
   margin-bottom: 10px;
+}
+
+.form-button {
+  width: 250px;
 }
 
 .quarter-chip {
@@ -37,4 +41,18 @@
   background-color: #fff;
   border: 1px solid #888;
   border-radius: 15px;
+}
+
+.details-dialog::-webkit-scrollbar {
+  width: 12px; /* Width of the entire scrollbar */
+}
+
+.details-dialog::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Background of the scrollbar track */
+}
+
+.details-dialog::-webkit-scrollbar-thumb {
+  background-color: #888; /* Color of the draggable thumb */
+  border-radius: 10px; /* Roundness of the thumb */
+  border: 3px solid #f1f1f1; /* Adds space around the thumb */
 }

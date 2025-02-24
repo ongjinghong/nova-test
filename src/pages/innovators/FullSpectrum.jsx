@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Button, Box, Typography, Stack } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { useSharePointData } from "../../data/sharepointData";
-import CustomizedDataGrid from "../submission/SubmissionDetails";
-import FilterPanel from "../../components/filter/filter";
+// import { useSharePointData } from "../../data/sharepointData";
+// import CustomizedDataGrid from "../submission/SubmissionDetailsWindow";
+// import FilterPanel from "../../components/filter/filter";
 
 export default function FullSpectrum() {
   const { listData } = useSharePointData();

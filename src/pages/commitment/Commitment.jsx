@@ -1,186 +1,160 @@
-import React, { useEffect, useState } from "react";
-import { Box, Stack, Typography } from "@mui/material";
-import { useSharePointData } from "../../data/sharepointData";
+import React, { useEffect } from "react";
+import { Box, Button } from "@mui/material";
 import Grid from "@mui/material/Grid2";
+import AddIcon from "@mui/icons-material/Add";
+import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
 
 import "./Commitment.css";
-import CommitmentHighlight from "./CommitmentHighlight";
-import MyCommitmentCard from "./MyCommitmentCard";
-import FilterPanel from "../../components/filter/filter";
-import CategoryCard from "../../components/card/CategoryCard";
-import TotalCommitmentBarChart from "./TotalCommitmentBarChart";
-import TotalCommitmentCard from "./TotalCommitmentCard";
-import PerformanceCard from "../../components/card/PerformanceCard";
-import { getCurrentYear, getLast30Days } from "../../utils/GeneralUtils";
+import useAppStore from "../../stores/AppStore";
+import useMemberStore from "../../stores/MemberStore";
+import useCommitmentStore from "../../stores/CommitmentStore";
+
+import CommitmentFilter from "./CommitmentFilter";
+import CategoryCard from "../../shared/CategoryCard";
+import CommitmentQuarterBarChart from "./CommitmentQuarterBarChart";
+import CommitmentTotalStatCard from "./CommitmentTotalStatCard";
+import CommitmentForm from "./CommitmentForm";
 
 const Commitment = () => {
-  const { listData } = useSharePointData();
-  const { commitment, mycommitment, submission, member } = listData;
-  const [filteredCommitment, setFilteredCommitment] = useState(commitment);
-  const [filteredMember, setFilteredMember] = useState(member);
-  const [filteredSubmission, setFilteredSubmission] = useState(submission);
-  const [managerFilter, setManagerFilter] = useState([]); // must present to prevent infinity loop in filter when not used
+  const commitmentType = ["Primary", "Secondary"];
+  const currentYear = useAppStore((state) => state.currentYear);
+  const { categories } = useAppStore((state) => state.constants);
+  const loginMember = useMemberStore((state) => state.loginMember);
+  const commitments = useCommitmentStore((state) => state.commitments);
+  const quarterCommitments = useCommitmentStore(
+    (state) => state.quarterCommitments
+  );
+  const lists = useCommitmentStore((state) => state.lists);
 
-  const commitCategoryMap = {
-    conf: "Conference",
-    conf2: "Conference2",
-    idf: "IDF",
-    idf2: "IDF2",
-    init: "Initiatives",
-    init2: "Initiatives2",
-    uinvt: "Microinnovation",
-    uinvt2: "Microinnovation2",
-    opensrc: "Opensource",
-    opensrc2: "Opensource2",
+  useEffect(() => {
+    lists.forEach(async (item) => {
+      if (item.year !== currentYear && item.data.length === 0) {
+        await useCommitmentStore.getState().getCommitments(item.year);
+      }
+    });
+  }, []);
+
+  const handleAddClick = () => {
+    useCommitmentStore.getState().openCommitmentForm();
+    useCommitmentStore.getState().resetCommitmentFormPage();
+    useCommitmentStore.getState().setCommitmentFormType("Add");
+  };
+
+  const handleUpdateClick = () => {
+    useCommitmentStore.getState().openCommitmentForm();
+    useCommitmentStore.getState().resetCommitmentFormPage();
+    useCommitmentStore.getState().setCommitmentFormType("Update");
+  };
+
+  const getCategorySum = (type, category) => {
+    switch (category) {
+      case "Conferences":
+        return quarterCommitments.reduce(
+          (sum, commitment) =>
+            sum +
+            (type === "Primary"
+              ? commitment.Conferences_Primary
+              : commitment.Conferences_Secondary),
+          0
+        );
+      case "IDF":
+        return quarterCommitments.reduce(
+          (sum, commitment) =>
+            sum +
+            (type === "Primary"
+              ? commitment.IDF_Primary
+              : commitment.IDF_Secondary),
+          0
+        );
+      case "Initiatives":
+        return quarterCommitments.reduce(
+          (sum, commitment) =>
+            sum +
+            (type === "Primary"
+              ? commitment.Initiatives_Primary
+              : commitment.Initiatives_Secondary),
+          0
+        );
+      case "Micro-Innovation":
+        return quarterCommitments.reduce(
+          (sum, commitment) =>
+            sum +
+            (type === "Primary"
+              ? commitment.MicroInnovation_Primary
+              : commitment.MicroInnovation_Secondary),
+          0
+        );
+      case "Open Source":
+        return quarterCommitments.reduce(
+          (sum, commitment) =>
+            sum +
+            (type === "Primary"
+              ? commitment.OpenSource_Primary
+              : commitment.OpenSource_Secondary),
+          0
+        );
+      default:
+        return 0;
+    }
   };
 
   return (
     <Box className="commitment-container">
       <Box className="commitment-filter">
-        <Stack
-          direction="row"
-          spacing={1}
-          sx={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          <Stack direction="row" spacing={0.5} sx={{ flexGrow: 1 }}>
-            <FilterPanel
-              data={commitment}
-              setData={setFilteredCommitment}
-              memberData={member}
-              setMemberData={setFilteredMember}
-              managerMode={managerFilter}
-              compareData={submission}
-              setCompareData={setFilteredSubmission}
-            />
-          </Stack>
-        </Stack>
+        <FilterAltIcon />
+        <CommitmentFilter />
+        {commitments.filter(
+          (item) =>
+            item.Year === currentYear && item.Email === loginMember.Email
+        ).length === 4 ? (
+          <Button
+            className="header-button"
+            variant="contained"
+            startIcon={<AutoFixHighIcon />}
+            onClick={handleUpdateClick}
+          >
+            Update {currentYear} Commitment
+          </Button>
+        ) : (
+          <Button
+            className="header-button"
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleAddClick}
+          >
+            Add {currentYear} Commitment
+          </Button>
+        )}
       </Box>
-
       <Box className="commitment-content">
-        <Grid container spacing={2} columns={12}>
-          {/* Container for the first, second, and third columns */}
-          <Grid size={9}>
-            <Grid container columns={15} spacing={2}>
-              {/* First row */}
-              <Grid size={5}>
-                <TotalCommitmentCard
-                  data={filteredCommitment}
-                  type="Primary"
-                  last30Days={getLast30Days(false)}
-                />
-              </Grid>
-              <Grid size={5}>
-                <TotalCommitmentCard
-                  data={filteredCommitment}
-                  type="Secondary"
-                  last30Days={getLast30Days(false)}
-                />
-              </Grid>
-              <Grid size={5}>
-                <PerformanceCard
-                  data={filteredCommitment}
-                  dataType="Commitment"
-                  secondData={filteredSubmission}
-                  secondDataType="Submission"
-                  last30Days={getLast30Days(false)}
-                />
-              </Grid>
+        <Grid container spacing={4} columns={12}>
+          {commitmentType.map((type) => (
+            <Grid key={type} size={6}>
+              <Grid container spacing={1} columns={12}>
+                <Grid size={12}>
+                  <CommitmentTotalStatCard type={type} />
+                </Grid>
 
-              {/* Second row */}
-              <Grid size={3}>
-                <CategoryCard
-                  data={filteredCommitment.reduce(
-                    (sum, item) => sum + (item.conf || 0),
-                    0
-                  )}
-                  secondaryData={filteredCommitment.reduce(
-                    (sum, item) => sum + (item.conf2 || 0),
-                    0
-                  )}
-                  dataType="Commitment"
-                  categoryName="Conference"
-                />
-              </Grid>
-              <Grid size={3}>
-                <CategoryCard
-                  data={filteredCommitment.reduce(
-                    (sum, item) => sum + (item.idf || 0),
-                    0
-                  )}
-                  secondaryData={filteredCommitment.reduce(
-                    (sum, item) => sum + (item.idf2 || 0),
-                    0
-                  )}
-                  dataType="Commitment"
-                  categoryName="IDF"
-                />
-              </Grid>
-              <Grid size={3}>
-                <CategoryCard
-                  data={filteredCommitment.reduce(
-                    (sum, item) => sum + (item.init || 0),
-                    0
-                  )}
-                  secondaryData={filteredCommitment.reduce(
-                    (sum, item) => sum + (item.init2 || 0),
-                    0
-                  )}
-                  dataType="Commitment"
-                  categoryName="Initiative"
-                />
-              </Grid>
-              <Grid size={3}>
-                <CategoryCard
-                  data={filteredCommitment.reduce(
-                    (sum, item) => sum + (item.uinvt || 0),
-                    0
-                  )}
-                  secondaryData={filteredCommitment.reduce(
-                    (sum, item) => sum + (item.uinvt2 || 0),
-                    0
-                  )}
-                  dataType="Commitment"
-                  categoryName="Micro Innovation"
-                />
-              </Grid>
-              <Grid size={3}>
-                <CategoryCard
-                  data={filteredCommitment.reduce(
-                    (sum, item) => sum + (item.opensrc || 0),
-                    0
-                  )}
-                  secondaryData={filteredCommitment.reduce(
-                    (sum, item) => sum + (item.opensrc2 || 0),
-                    0
-                  )}
-                  dataType="Commitment"
-                  categoryName="Open Source"
-                />
-              </Grid>
+                {categories.map((category) => (
+                  <Grid key={category} size={4}>
+                    <CategoryCard
+                      category={category}
+                      sum={getCategorySum(type, category)}
+                    />
+                  </Grid>
+                ))}
 
-              <Grid size={15}>
-                <TotalCommitmentBarChart data={filteredCommitment} />
+                <Grid size={12}>
+                  <CommitmentQuarterBarChart type={type} />
+                </Grid>
               </Grid>
             </Grid>
-          </Grid>
-
-          {/* Personal Commitment */}
-          <Grid size={3}>
-            <Grid container columns={3} spacing={2}>
-              <Grid size={3}>
-                <CommitmentHighlight />
-              </Grid>
-              <Grid size={3}>
-                <MyCommitmentCard expand={true} />
-              </Grid>
-            </Grid>
-          </Grid>
+          ))}
         </Grid>
       </Box>
+
+      <CommitmentForm />
     </Box>
   );
 };

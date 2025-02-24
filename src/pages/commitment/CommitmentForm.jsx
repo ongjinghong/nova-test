@@ -1,13 +1,11 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
-  FormLabel,
-  IconButton,
-  Stack,
+  Divider,
   Step,
   StepLabel,
   Stepper,
@@ -15,350 +13,408 @@ import {
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import CloseIcon from "@mui/icons-material/Close";
 import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
-import { styled } from "@mui/system";
 
-import { useSharePointData } from "../../data/sharepointData";
-import CommitmentFormStep from "./CommitmentFormStep";
+import useAppStore from "../../stores/AppStore";
+import useMemberStore from "../../stores/MemberStore";
+import useCommitmentStore from "../../stores/CommitmentStore";
 
-const FormGrid = styled(Grid)(() => ({
-  display: "flex",
-  flexDirection: "column",
-}));
+export default function CommitmentForm() {
+  const { quarters } = useAppStore((state) => state.constants);
+  const loginMember = useMemberStore((state) => state.loginMember);
+  const commitments = useCommitmentStore((state) => state.commitments);
+  const commitmentFormOpen = useCommitmentStore(
+    (state) => state.commitmentFormOpen
+  );
+  const commitmentFormType = useCommitmentStore(
+    (state) => state.commitmentFormType
+  );
+  const commitmentsInput = useCommitmentStore(
+    (state) => state.commitmentsInput
+  );
+  const commitmentFormPage = useCommitmentStore(
+    (state) => state.commitmentFormPage
+  );
 
-export default function CommitmentForm({ open, setOpen, data, year }) {
-  const steps = ["Q1", "Q2", "Q3", "Q4"];
-  const {
-    token,
-    listData,
-    fetchCommitmentData,
-    addCommitment,
-    updateCommitment,
-  } = useSharePointData();
-  const { myinfo } = listData;
-  const [activeStep, setActiveStep] = useState(0);
-  const [defaultCommitmentData, setDefaultCommitmentData] = useState({
-    Conferences_Primary: 0,
-    Conferences_Secondary: 0,
-    IDF_Primary: 0,
-    IDF_Secondary: 0,
-    Initiatives_Primary: 0,
-    Initiatives_Secondary: 0,
-    MicroInnovation_Primary: 0,
-    MicroInnovation_Secondary: 0,
-    OpenSource_Primary: 0,
-    OpenSource_Secondary: 0,
-  });
-  const [newCommitmentData, setNewCommitmentData] = useState([
-    {
-      ...defaultCommitmentData,
-      Name: myinfo[0].name,
-      Email: myinfo[0].email,
-      Site: myinfo[0].site,
-      Domain: myinfo[0].domain,
-      Quarter: "Q1",
-    },
-    {
-      ...defaultCommitmentData,
-      Name: myinfo[0].name,
-      Email: myinfo[0].email,
-      Site: myinfo[0].site,
-      Domain: myinfo[0].domain,
-      Quarter: "Q2",
-    },
-    {
-      ...defaultCommitmentData,
-      Name: myinfo[0].name,
-      Email: myinfo[0].email,
-      Site: myinfo[0].site,
-      Domain: myinfo[0].domain,
-      Quarter: "Q3",
-    },
-    {
-      ...defaultCommitmentData,
-      Name: myinfo[0].name,
-      Email: myinfo[0].email,
-      Site: myinfo[0].site,
-      Domain: myinfo[0].domain,
-      Quarter: "Q4",
-    },
-  ]);
-  const [updateCommitmentID, setUpdateCommitmentID] = useState([]);
-  const [isTimeoutCleared, setIsTimeoutCleared] = useState(false);
-  const [countdown, setCountdown] = useState(10);
-  const timeoutIdRef = useRef(null);
-  const intervalIdRef = useRef(null);
+  const handleFormClose = useCommitmentStore(
+    (state) => state.closeCommitmentForm
+  );
 
   useEffect(() => {
-    if (data && data.length === 4) {
-      const updatedCommitmentData = data.map((item, index) => ({
-        ...defaultCommitmentData,
-        Conferences_Primary:
-          item.conf || defaultCommitmentData.Conferences_Primary,
-        Conferences_Secondary:
-          item.conf2 || defaultCommitmentData.Conferences_Secondary,
-        IDF_Primary: item.idf || defaultCommitmentData.IDF_Primary,
-        IDF_Secondary: item.idf2 || defaultCommitmentData.IDF_Secondary,
-        Initiatives_Primary:
-          item.init || defaultCommitmentData.Initiatives_Primary,
-        Initiatives_Secondary:
-          item.init2 || defaultCommitmentData.Initiatives_Secondary,
-        MicroInnovation_Primary:
-          item.uinvt || defaultCommitmentData.MicroInnovation_Primary,
-        MicroInnovation_Secondary:
-          item.uinvt2 || defaultCommitmentData.MicroInnovation_Secondary,
-        OpenSource_Primary:
-          item.opensrc || defaultCommitmentData.OpenSource_Primary,
-        OpenSource_Secondary:
-          item.opensrc2 || defaultCommitmentData.OpenSource_Secondary,
-        Name: myinfo[0].name,
-        Email: myinfo[0].email,
-        Site: myinfo[0].site,
-        Domain: myinfo[0].domain,
-        Quarter: `Q${index + 1}`,
-      }));
-      const updatedCommitmentID = data.map((item) => item.list_id);
-      setNewCommitmentData(updatedCommitmentData);
-      setUpdateCommitmentID(updatedCommitmentID);
-    }
-  }, [data, defaultCommitmentData, myinfo]);
-
-  const startCountdown = () => {
-    setCountdown(10);
-    intervalIdRef.current = setInterval(() => {
-      setCountdown((prevCountdown) => {
-        if (prevCountdown <= 1) {
-          clearInterval(intervalIdRef.current);
-          return 0;
-        }
-        return prevCountdown - 1;
-      });
-    }, 1000);
-  };
-
-  const handleUpdateClose = () => {
-    setOpen(false);
-    setActiveStep(0);
-    setNewCommitmentData([
-      defaultCommitmentData,
-      defaultCommitmentData,
-      defaultCommitmentData,
-      defaultCommitmentData,
-    ]);
-    clearTimeout(timeoutIdRef.current);
-    clearInterval(intervalIdRef.current);
-  };
-
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
-
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  const handleSubmit = async () => {
-    if (!data) {
-      console.log("add new commitment", newCommitmentData);
-      const response = await addCommitment(token, newCommitmentData, year);
-      if (response.every((res) => res === "Item created successfully")) {
-        setActiveStep(steps.length);
-        startCountdown();
-        timeoutIdRef.current = setTimeout(() => {
-          if (!isTimeoutCleared) {
-            fetchCommitmentData(token);
-          }
-        }, 10000); // 10000 milliseconds = 10 seconds
-      }
-    } else {
-      console.log("update commitment", newCommitmentData);
-      const response = await updateCommitment(
-        token,
-        updateCommitmentID,
-        newCommitmentData,
-        year
-      );
-      if (response.every((res) => res === "Item updated successfully")) {
-        setActiveStep(steps.length);
-        startCountdown();
-        timeoutIdRef.current = setTimeout(() => {
-          if (!isTimeoutCleared) {
-            fetchCommitmentData(token);
-          }
-        }, 10000); // 10000 milliseconds = 10 seconds
+    if (commitmentFormOpen) {
+      useCommitmentStore.getState().clearCommitmentInput();
+      if (commitmentFormType === "Add") {
+        quarters.map((quarter) => {
+          const newCommitment = {
+            ...useCommitmentStore.getState().commitmentInputTemplate,
+          };
+          newCommitment.Quarter = quarter;
+          newCommitment.Email = loginMember.Email;
+          newCommitment.Site = loginMember.Site;
+          newCommitment.Domain = loginMember.Domain;
+          useCommitmentStore.getState().addCommitmentInput(newCommitment);
+        });
+      } else if (commitmentFormType === "Update") {
+        commitments
+          .filter(
+            (commitment) =>
+              commitment.Email === loginMember.Email && commitment.Year === 2025
+          )
+          .map((commitment) => {
+            const newCommitment = {
+              ...useCommitmentStore.getState().commitmentInputTemplate,
+            };
+            newCommitment.id = commitment.ListID;
+            newCommitment.Quarter = commitment.Quarter;
+            newCommitment.Email = commitment.Email;
+            newCommitment.Site = commitment.Site;
+            newCommitment.Domain = commitment.Domain;
+            newCommitment.Conferences_Primary = commitment.Conferences_Primary;
+            newCommitment.Conferences_Secondary =
+              commitment.Conferences_Secondary;
+            newCommitment.IDF_Primary = commitment.IDF_Primary;
+            newCommitment.IDF_Secondary = commitment.IDF_Secondary;
+            newCommitment.Initiatives_Primary = commitment.Initiatives_Primary;
+            newCommitment.Initiatives_Secondary =
+              commitment.Initiatives_Secondary;
+            newCommitment.MicroInnovation_Primary =
+              commitment.MicroInnovation_Primary;
+            newCommitment.MicroInnovation_Secondary =
+              commitment.MicroInnovation_Secondary;
+            newCommitment.OpenSource_Primary = commitment.OpenSource_Primary;
+            newCommitment.OpenSource_Secondary =
+              commitment.OpenSource_Secondary;
+            useCommitmentStore.getState().addCommitmentInput(newCommitment);
+          });
       }
     }
+  }, [commitmentFormOpen]);
+
+  const handleInputChange = (event, index, key) => {
+    useCommitmentStore
+      .getState()
+      .updateCommitmentInput(index, key, event.target.value);
+  };
+
+  const handleNextPage = () => {
+    useCommitmentStore.getState().nextCommitmentFormPage();
+  };
+
+  const handlePreviousPage = () => {
+    useCommitmentStore.getState().previousCommitmentFormPage();
+  };
+
+  const handleSubmit = () => {
+    if (commitmentFormType === "Add") {
+      useCommitmentStore.getState().addCommitment();
+    } else if (commitmentFormType === "Update") {
+      useCommitmentStore.getState().updateCommitment();
+    }
+    useCommitmentStore.getState().closeCommitmentForm();
   };
 
   return (
-    <Dialog open={open} onClose={handleUpdateClose} maxWidth="sm">
-      <IconButton
-        aria-label="close"
-        onClick={handleUpdateClose}
-        sx={(theme) => ({
-          position: "absolute",
-          right: 8,
-          top: 8,
-          color: theme.palette.grey[700],
-        })}
-      >
-        <CloseIcon />
-      </IconButton>
-      <DialogContent>
-        <Grid container columns={12}>
-          <Grid
-            size={12}
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              width: "100%",
-              backgroundColor: { xs: "transparent", sm: "background.default" },
-              alignItems: "start",
-              pt: 4,
-              px: 2,
-              gap: 4,
-            }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                alignItems: "center",
-                flexGrow: 1,
-                width: "100%",
-              }}
-            >
-              <Stepper
-                id="submission-stepper"
-                activeStep={activeStep}
-                sx={{ width: "100%", height: 40 }}
-              >
-                {steps.map((label) => (
-                  <Step
-                    sx={{
-                      ":first-of-type": { pl: 0 },
-                      ":last-child": { pr: 2 },
-                    }}
-                    key={label}
-                  >
-                    <StepLabel>{label}</StepLabel>
-                  </Step>
-                ))}
-              </Stepper>
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                flexGrow: 1,
-                width: "100%",
-                gap: { xs: 5, md: "none" },
-              }}
-            >
-              {activeStep === steps.length && (
-                <Stack
-                  spacing={2}
-                  useFlexGap
-                  sx={{ alignItems: "center", textAlign: "center" }}
-                >
-                  <Typography variant="h1">✅</Typography>
-                  <Typography variant="h5">
-                    Thank you for your {data ? "update" : "commitment"}!
-                  </Typography>
-
-                  <Typography
-                    variant="body1"
-                    sx={{ color: "text.secondary", maxWidth: "500px" }}
-                  >
-                    Your {year} commitment <br />
-                    has been {data ? "updated" : "added"}.
-                    <br />
-                    Looking forward for your innovation!
-                  </Typography>
-                  <Button variant="contained" onClick={handleUpdateClose}>
-                    {countdown > 0
-                      ? `Back to Commitment Page (${countdown})`
-                      : "Back to Commitment Page"}
-                  </Button>
-                </Stack>
-              )}
-              {activeStep == 0 && (
-                <CommitmentFormStep
-                  quarter={0}
-                  newData={newCommitmentData}
-                  setNewData={setNewCommitmentData}
-                />
-              )}
-              {activeStep == 1 && (
-                <CommitmentFormStep
-                  quarter={1}
-                  newData={newCommitmentData}
-                  setNewData={setNewCommitmentData}
-                />
-              )}
-              {activeStep == 2 && (
-                <CommitmentFormStep
-                  quarter={2}
-                  newData={newCommitmentData}
-                  setNewData={setNewCommitmentData}
-                />
-              )}
-              {activeStep == 3 && (
-                <CommitmentFormStep
-                  quarter={3}
-                  newData={newCommitmentData}
-                  setNewData={setNewCommitmentData}
-                />
-              )}
-            </Box>
+    <Dialog
+      open={commitmentFormOpen}
+      onClose={handleFormClose}
+      fullWidth
+      maxWidth="sm"
+      slotProps={{
+        paper: {
+          component: "form",
+        },
+      }}
+      sx={{ paddingY: 0 }}
+    >
+      <DialogContent sx={{ paddingY: 6 }}>
+        <Stepper
+          id="submission-stepper"
+          activeStep={commitmentFormPage}
+          sx={{ marginBottom: 4 }}
+        >
+          {quarters.map((quarter) => (
+            <Step key={quarter}>
+              <StepLabel>{quarter}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+        <Grid
+          container
+          column={12}
+          rowSpacing={2}
+          columnSpacing={4}
+          sx={{ paddingX: 2 }}
+        >
+          <Grid size={2} sx={{ alignContent: "center" }}>
+            <Typography variant="body1">Email</Typography>
+          </Grid>
+          <Grid size={10}>
+            <TextField
+              type="text"
+              size="small"
+              disabled
+              fullWidth
+              value={loginMember.Email}
+            />
+          </Grid>
+          <Grid size={2} sx={{ alignContent: "center" }}>
+            <Typography variant="body1">Site</Typography>
+          </Grid>
+          <Grid size={4}>
+            <TextField
+              type="text"
+              size="small"
+              disabled
+              fullWidth
+              value={loginMember["Site"]}
+            />
+          </Grid>
+          <Grid size={2} sx={{ alignContent: "center" }}>
+            <Typography variant="body1">Domain</Typography>
+          </Grid>
+          <Grid size={4}>
+            <TextField
+              type="text"
+              size="small"
+              disabled
+              fullWidth
+              value={loginMember["Domain"]}
+            />
           </Grid>
         </Grid>
-      </DialogContent>
-      {activeStep !== steps.length ? (
-        <DialogActions>
-          <Box
-            sx={[
-              {
-                display: "flex",
-                flexDirection: { xs: "column-reverse", sm: "row" },
-                alignItems: "end",
-                flexGrow: 1,
-                gap: 1,
-                pt: 2,
-                px: 4,
-                pb: 4,
-              },
-              activeStep !== 0
-                ? { justifyContent: "space-between" }
-                : { justifyContent: "flex-end" },
-            ]}
-          >
-            {activeStep !== 0 && (
-              <Button
-                startIcon={<ChevronLeftRoundedIcon />}
-                onClick={handleBack}
-                variant="text"
-                sx={{ display: { xs: "none", sm: "flex" } }}
+
+        <Divider sx={{ marginY: 4 }} />
+
+        <Box>
+          {commitmentsInput
+            .filter((input, index) => index === commitmentFormPage)
+            .map((input) => (
+              <Grid
+                key={input.Quarter}
+                container
+                rowSpacing={2}
+                columnSpacing={4}
+                columns={12}
+                sx={{ justifyContent: "center" }}
               >
-                Previous
-              </Button>
-            )}
-            <Button
-              variant="contained"
-              endIcon={<ChevronRightRoundedIcon />}
-              onClick={
-                activeStep === steps.length - 1 ? handleSubmit : handleNext
-              }
-              sx={{ width: "fit-content" }}
-            >
-              {activeStep === steps.length - 1 ? "Submit" : "Next"}
-            </Button>
-          </Box>
-        </DialogActions>
-      ) : null}
+                <Grid size={3} sx={{ alignContent: "center" }}>
+                  <Typography variant="body1">Conferences</Typography>
+                </Grid>
+                <Grid size={4}>
+                  <TextField
+                    label="Primary"
+                    type="number"
+                    size="small"
+                    fullWidth
+                    value={input.Conferences_Primary}
+                    onChange={(event) =>
+                      handleInputChange(
+                        event,
+                        commitmentFormPage,
+                        "Conferences_Primary"
+                      )
+                    }
+                    slotProps={{ htmlInput: { min: 0, max: 5 } }}
+                  />
+                </Grid>
+                <Grid size={4}>
+                  <TextField
+                    label="Secondary"
+                    type="number"
+                    size="small"
+                    fullWidth
+                    value={input.Conferences_Secondary}
+                    onChange={(event) =>
+                      handleInputChange(
+                        event,
+                        commitmentFormPage,
+                        "Conferences_Secondary"
+                      )
+                    }
+                    slotProps={{ htmlInput: { min: 0, max: 5 } }}
+                  />
+                </Grid>
+
+                <Grid size={3} sx={{ alignContent: "center" }}>
+                  <Typography variant="body1">IDF</Typography>
+                </Grid>
+                <Grid size={4}>
+                  <TextField
+                    label="Primary"
+                    type="number"
+                    size="small"
+                    fullWidth
+                    value={input.IDF_Primary}
+                    onChange={(event) =>
+                      handleInputChange(
+                        event,
+                        commitmentFormPage,
+                        "IDF_Primary"
+                      )
+                    }
+                    slotProps={{ htmlInput: { min: 0, max: 5 } }}
+                  />
+                </Grid>
+                <Grid size={4}>
+                  <TextField
+                    label="Secondary"
+                    type="number"
+                    size="small"
+                    fullWidth
+                    value={input.IDF_Secondary}
+                    onChange={(event) =>
+                      handleInputChange(
+                        event,
+                        commitmentFormPage,
+                        "IDF_Secondary"
+                      )
+                    }
+                    slotProps={{ htmlInput: { min: 0, max: 5 } }}
+                  />
+                </Grid>
+
+                <Grid size={3} sx={{ alignContent: "center" }}>
+                  <Typography variant="body1">Initiatives</Typography>
+                </Grid>
+                <Grid size={4}>
+                  <TextField
+                    label="Primary"
+                    type="number"
+                    size="small"
+                    fullWidth
+                    value={input.Initiatives_Primary}
+                    onChange={(event) =>
+                      handleInputChange(
+                        event,
+                        commitmentFormPage,
+                        "Initiatives_Primary"
+                      )
+                    }
+                    slotProps={{ htmlInput: { min: 0, max: 5 } }}
+                  />
+                </Grid>
+                <Grid size={4}>
+                  <TextField
+                    label="Secondary"
+                    type="number"
+                    size="small"
+                    fullWidth
+                    value={input.Initiatives_Secondary}
+                    onChange={(event) =>
+                      handleInputChange(
+                        event,
+                        commitmentFormPage,
+                        "Initiatives_Secondary"
+                      )
+                    }
+                    slotProps={{ htmlInput: { min: 0, max: 5 } }}
+                  />
+                </Grid>
+
+                <Grid size={3} sx={{ alignContent: "center" }}>
+                  <Typography variant="body1">Micro Innovation</Typography>
+                </Grid>
+                <Grid size={4}>
+                  <TextField
+                    label="Primary"
+                    type="number"
+                    size="small"
+                    fullWidth
+                    value={input.MicroInnovation_Primary}
+                    onChange={(event) =>
+                      handleInputChange(
+                        event,
+                        commitmentFormPage,
+                        "MicroInnovation_Primary"
+                      )
+                    }
+                    slotProps={{ htmlInput: { min: 0, max: 5 } }}
+                  />
+                </Grid>
+                <Grid size={4}>
+                  <TextField
+                    label="Secondary"
+                    type="number"
+                    size="small"
+                    fullWidth
+                    value={input.MicroInnovation_Secondary}
+                    onChange={(event) =>
+                      handleInputChange(
+                        event,
+                        commitmentFormPage,
+                        "MicroInnovation_Secondary"
+                      )
+                    }
+                    slotProps={{ htmlInput: { min: 0, max: 5 } }}
+                  />
+                </Grid>
+
+                <Grid size={3} sx={{ alignContent: "center" }}>
+                  <Typography variant="body1">Open Source</Typography>
+                </Grid>
+                <Grid size={4}>
+                  <TextField
+                    label="Primary"
+                    type="number"
+                    size="small"
+                    fullWidth
+                    value={input.OpenSource_Primary}
+                    onChange={(event) =>
+                      handleInputChange(
+                        event,
+                        commitmentFormPage,
+                        "OpenSource_Primary"
+                      )
+                    }
+                    slotProps={{ htmlInput: { min: 0, max: 5 } }}
+                  />
+                </Grid>
+                <Grid size={4}>
+                  <TextField
+                    label="Secondary"
+                    type="number"
+                    size="small"
+                    fullWidth
+                    value={input.OpenSource_Secondary}
+                    onChange={(event) =>
+                      handleInputChange(
+                        event,
+                        commitmentFormPage,
+                        "OpenSource_Secondary"
+                      )
+                    }
+                    slotProps={{ htmlInput: { min: 0, max: 5 } }}
+                  />
+                </Grid>
+              </Grid>
+            ))}
+        </Box>
+      </DialogContent>
+
+      <DialogActions
+        sx={{
+          paddingX: 3,
+          justifyContent: "space-between",
+          marginBottom: 1,
+        }}
+      >
+        <Button
+          startIcon={<ChevronLeftRoundedIcon />}
+          variant="text"
+          onClick={handlePreviousPage}
+          disabled={commitmentFormPage === 0}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="text"
+          endIcon={<ChevronRightRoundedIcon />}
+          onClick={commitmentFormPage === 3 ? handleSubmit : handleNextPage}
+        >
+          {commitmentFormPage === 3 ? "Submit" : "Next"}{" "}
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 }

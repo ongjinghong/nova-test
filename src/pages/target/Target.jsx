@@ -1,166 +1,145 @@
-import React, { useState, useEffect } from "react";
-import { useSharePointData } from "../../data/sharepointData";
-import { Box, Stack } from "@mui/material";
+import React, { useEffect } from "react";
+import { Box, Button } from "@mui/material";
 import Grid from "@mui/material/Grid2";
+import AddIcon from "@mui/icons-material/Add";
+import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
 
 import "./Target.css";
-import FilterPanel from "../../components/filter/filter";
-import TotalTargetCard from "./TotalTargetCard";
-import PerformanceCard from "../../components/card/PerformanceCard";
-import CategoryCard from "../../components/card/CategoryCard";
-import TotalTargetBarChart from "./TotalTargetBarChart";
-import TargetDetails from "./TargetDetails";
-import TargetHighlight from "./TargetHighlight";
-import { getCurrentYear, getLast30Days } from "../../utils/GeneralUtils";
+import useAppStore from "../../stores/AppStore";
+import useMemberStore from "../../stores/MemberStore";
+import useTargetStore from "../../stores/TargetStore";
+
+import TargetFilter from "./TargetFilter";
+import TargetTotalStatCard from "./TargetTotalStatCard";
+import CategoryCard from "../../shared/CategoryCard";
+import TargetQuarterBarChart from "./TargetQuarterBarChart";
+import TargetDetailsTable from "./TargetDetailsTable";
+import TargetForm from "./TargetForm";
 
 const Target = () => {
-  const { listData } = useSharePointData();
-  const { target, member, submission, commitment } = listData; // Ensure member is defined and imported if necessary
+  const currentYear = useAppStore((state) => state.currentYear);
+  const { categories } = useAppStore((state) => state.constants);
+  const appMode = useAppStore((state) => state.appMode);
+  const loginMember = useMemberStore((state) => state.loginMember);
+  const lists = useTargetStore((state) => state.lists);
+  const targets = useTargetStore((state) => state.targets);
+  const quarterTargets = useTargetStore((state) => state.quarterTargets);
+  const getTargets = useTargetStore((state) => state.getTargets);
 
-  const [filteredTarget, setFilteredTarget] = useState(target);
-  const [filteredMember, setFilteredMember] = useState(member);
-  const [filteredCommitment, setFilteredCommitment] = useState(commitment);
-  const [filteredSubmission, setFilteredSubmission] = useState(submission);
-  const [managerFilter, setManagerFilter] = useState([]); // must present to prevent infinity loop in filter when not used
+  useEffect(() => {
+    lists.forEach(async (item) => {
+      if (item.year !== currentYear && item.data.length === 0) {
+        await getTargets(item.year);
+      }
+    });
+  }, []);
 
   const getCategorySum = (category) => {
-    return filteredTarget.reduce((sum, item) => sum + (item[category] || 0), 0);
+    switch (category) {
+      case "Conferences":
+        return quarterTargets.reduce(
+          (sum, target) => sum + target.Conference,
+          0
+        );
+      case "IDF":
+        return quarterTargets.reduce((sum, target) => sum + target.IDF, 0);
+      case "Initiatives":
+        return quarterTargets.reduce(
+          (sum, target) => sum + target.POC_x002f_Pitching,
+          0
+        );
+      case "Micro-Innovation":
+        return quarterTargets.reduce(
+          (sum, target) => sum + target.Micro_x002d_Innovation,
+          0
+        );
+      case "Open Source":
+        return quarterTargets.reduce(
+          (sum, target) => sum + target.OpenSource,
+          0
+        );
+      default:
+        return 0;
+    }
   };
 
-  const getDiff = (submissionCategory, targetCategory) => {
-    let diff =
-      getCategorySum(targetCategory) -
-      filteredSubmission.filter((item) => item.category === submissionCategory)
-        .length;
-    if (diff < 0) {
-      diff = 0;
-    }
-    return diff;
+  const handleAddClick = () => {
+    useTargetStore.getState().openTargetForm();
+    useTargetStore.getState().resetTargetFormPage();
+    useTargetStore.getState().setTargetFormType("Add");
+  };
+
+  const handleUpdateClick = () => {
+    useTargetStore.getState().openTargetForm();
+    useTargetStore.getState().resetTargetFormPage();
+    useTargetStore.getState().setTargetFormType("Update");
   };
 
   return (
     <Box className="target-container">
       <Box className="target-filter">
-        <Stack
-          direction="row"
-          spacing={1}
-          sx={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          <Stack direction="row" spacing={0.5} sx={{ flexGrow: 1 }}>
-            <FilterPanel
-              data={target}
-              setData={setFilteredTarget}
-              memberData={member}
-              setMemberData={setFilteredMember}
-              managerMode={managerFilter}
-              compareData={submission}
-              setCompareData={setFilteredSubmission}
-              compareSecondData={commitment}
-              setCompareSecondData={setFilteredCommitment}
-            />
-          </Stack>
-        </Stack>
+        <FilterAltIcon />
+        <TargetFilter />
+        {(appMode === "Innovation" || appMode === "Manager") && (
+          <>
+            {targets.some(
+              (target) =>
+                target.Site === loginMember.Site &&
+                target.Domain === loginMember.Domain
+            ) ? (
+              <Button
+                className="header-button"
+                variant="contained"
+                startIcon={<AutoFixHighIcon />}
+                onClick={handleUpdateClick}
+              >
+                Update {currentYear} Target
+              </Button>
+            ) : (
+              <Button
+                className="header-button"
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={handleAddClick}
+              >
+                Add {currentYear} Target
+              </Button>
+            )}
+          </>
+        )}
       </Box>
 
       <Box className="target-content">
         <Grid container spacing={2} columns={12}>
           {/* First row */}
-          <Grid size={3}>
-            <TotalTargetCard
-              data={filteredTarget}
-              last30Days={getLast30Days(false)}
-            />
-          </Grid>
-          <Grid size={3}>
-            <PerformanceCard
-              data={filteredTarget}
-              dataType="Target"
-              secondData={filteredSubmission}
-              secondDataType="Submission"
-              last30Days={getLast30Days(false)}
-            />
-          </Grid>
-          <Grid size={3}>
-            <PerformanceCard
-              data={filteredTarget}
-              dataType="Target"
-              secondData={filteredCommitment}
-              secondDataType="Commitment"
-              last30Days={getLast30Days(false)}
-            />
-          </Grid>
-          <Grid size={3}>
-            <TargetHighlight />
+          <Grid size={4}>
+            <TargetTotalStatCard />
           </Grid>
 
-          {/* Second row */}
-          <Grid size={2}>
-            <CategoryCard
-              data={getCategorySum("conferences")}
-              dataType="Target"
-              categoryName="Conference"
-              diff={getDiff("Conferences", "conferences")}
-              completion={true}
-            />
-          </Grid>
-          <Grid size={2}>
-            <CategoryCard
-              data={getCategorySum("idf")}
-              dataType="Target"
-              categoryName="IDF"
-              diff={getDiff("IDF", "idf")}
-              completion={true}
-            />
-          </Grid>
-          <Grid size={2}>
-            <CategoryCard
-              data={getCategorySum("initiatives")}
-              dataType="Target"
-              categoryName="Initiative"
-              diff={getDiff("Initiatives", "initiatives")}
-              completion={true}
-            />
-          </Grid>
-          <Grid size={2}>
-            <CategoryCard
-              data={getCategorySum("microinnovation")}
-              dataType="Target"
-              categoryName="Micro Innovation"
-              diff={getDiff("Micro-Innovation", "microinnovation")}
-              completion={true}
-            />
-          </Grid>
-          <Grid size={2}>
-            <CategoryCard
-              data={getCategorySum("opensource")}
-              dataType="Target"
-              categoryName="Open Source"
-              diff={getDiff("Open Source", "opensource")}
-              completion={true}
-            />
-          </Grid>
-          <Grid size={2}>
-            <CategoryCard
-              data={getCategorySum("knowledgesharing")}
-              dataType="Target"
-              categoryName="Knowledge Sharing"
-              diff={getDiff("Knowledge Sharing", "knowledgesharing")}
-              completion={true}
-            />
+          <Grid size={8}>
+            <Grid container spacing={1} columns={12}>
+              {categories.map((category) => (
+                <Grid key={category} size={4}>
+                  <CategoryCard
+                    category={category}
+                    sum={getCategorySum(category)}
+                  />
+                </Grid>
+              ))}
+            </Grid>
           </Grid>
 
-          <Grid size={5}>
-            <TotalTargetBarChart data={filteredTarget} />
+          <Grid size={12}>
+            <TargetQuarterBarChart />
           </Grid>
-          <Grid size={7}>
-            <TargetDetails data={filteredTarget} />
+          <Grid size={12}>
+            <TargetDetailsTable />
           </Grid>
         </Grid>
       </Box>
+
+      <TargetForm />
     </Box>
   );
 };
