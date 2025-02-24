@@ -46,13 +46,13 @@
   - Annoucement panel - Stay informed on innovation program
   - News panel - Stay updated to the trend
   - Profile card - Understand personal innovation status
-- Innovation Stars page - <b>Coming Soon! - Q1 2025</b>
+- Innovation Stars page - <b>Coming Soon! - Q2 2025</b>
 - Commitment page
 - Submission page
 - Target page
-- NOVA points tracking - <b>Coming Soon! - Q1 2025</b>
+- NOVA points tracking - <b>Coming Soon! - 2H 2025</b>
   - tracks partipation points
-- NOVA AI agent - <b>Coming Soon! - 2025</b>
+- NOVA AI agent - <b>Coming Soon! - 2H 2025</b>
   - help answering question on Intel Flex's Innovation
   - help ideate innovation idea
   - help innovate with Innovation Thinking tools
