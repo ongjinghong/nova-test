@@ -20,6 +20,25 @@ export function getNextMondayMidnight() {
   return nextMonday;
 }
 
+// Function to generate a random color
+export function getRandomColor() {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
+
+// Function to calculate luminance and determine text color
+export function getTextColor(bgColor) {
+  const r = parseInt(bgColor.slice(1, 3), 16);
+  const g = parseInt(bgColor.slice(3, 5), 16);
+  const b = parseInt(bgColor.slice(5, 7), 16);
+  const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+  return luminance > 186 ? 'black' : 'white';
+};
+
 export function getLast30Days(stringFormat) {
   const days = [];
   const currentDate = new Date();

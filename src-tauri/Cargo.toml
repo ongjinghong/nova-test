@@ -1,6 +1,6 @@
 [package]
 name = "nova"
-version = "0.2.0"
+version = "0.3.0"
 description = "Intel Flex Innovation App"
 authors = ["zheng.chyuan.ooi@intel.com"]
 edition = "2021"
@@ -28,4 +28,6 @@ base64 = "0.13"
 tauri-plugin-shell = "2"
 tauri-plugin-process = "2"
 tauri-plugin-opener = "2.2.5"
+tauri-plugin-fs = "2"
+umya-spreadsheet = "2.2.3"
 

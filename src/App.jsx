@@ -4,6 +4,7 @@ import {
   UnauthenticatedTemplate,
   useMsal,
 } from "@azure/msal-react";
+import { InteractionRequiredAuthError } from "@azure/msal-browser";
 import { Box, Snackbar, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -17,7 +18,8 @@ import Commitment from "./pages/commitment/Commitment";
 import Submission from "./pages/submission/Submission";
 import Target from "./pages/target/Target";
 import Stars from "./pages/stars/stars";
-import FullSpectrum from "./pages/innovators/FullSpectrum";
+import InnovationTools from "./pages/tools/Tools";
+// import FunActivities from "./pages/fun/FunActivities";
 
 import useAppStore from "./stores/AppStore";
 import useAzureStore from "./stores/AzureStore";
@@ -43,6 +45,17 @@ function App() {
         setAccessToken(tokenResponse.accessToken);
       } catch (error) {
         console.error("Error acquiring token silently:", error);
+        if (error instanceof InteractionRequiredAuthError) {
+          try {
+            const tokenResponse = await instance.acquireTokenPopup({
+              scopes: useAzureStore.getState().apiPermissions, // Replace with your scopes
+              account: accounts[0],
+            });
+            setAccessToken(tokenResponse.accessToken);
+          } catch (popupError) {
+            console.error("Error acquiring token via popup:", popupError);
+          }
+        }
       }
     };
 
@@ -83,7 +96,8 @@ function App() {
             {currentPage === "Submission" && <Submission />}
             {currentPage === "Target" && <Target />}
             {currentPage === "Innovation Stars" && <Stars />}
-            {currentPage === "FullSpectrum" && <FullSpectrum />}
+            {currentPage === "Tools" && <InnovationTools />}
+            {/* {currentPage === "Fun Activities" && <FunActivities />} */}
           </Box>
           <Announcement />
           <Snackbar

@@ -28,7 +28,8 @@ const useAppStore = create((set) => ({
       // "FullSpectrum",
       "Members",
       "Hall of Fames",
-      "Tools/Techniques",
+      "Tools",
+      // "Fun Activities",
     ],
     years: [2024, 2025],
     quarters: ["Q1", "Q2", "Q3", "Q4"],
@@ -59,7 +60,7 @@ const useAppStore = create((set) => ({
 
   portalLinks: [
     {
-      name: "Portal Home Page",
+      name: "Portal",
       url: "https://goto.intel.com/intelflexinnovation",
     },
     {

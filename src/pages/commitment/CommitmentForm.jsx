@@ -50,6 +50,7 @@ export default function CommitmentForm() {
             ...useCommitmentStore.getState().commitmentInputTemplate,
           };
           newCommitment.Quarter = quarter;
+          newCommitment.Name = loginMember.Name;
           newCommitment.Email = loginMember.Email;
           newCommitment.Site = loginMember.Site;
           newCommitment.Domain = loginMember.Domain;
@@ -61,6 +62,12 @@ export default function CommitmentForm() {
             (commitment) =>
               commitment.Email === loginMember.Email && commitment.Year === 2025
           )
+          .sort((a, b) => {
+            const quarterOrder = ["Q1", "Q2", "Q3", "Q4"];
+            return (
+              quarterOrder.indexOf(a.Quarter) - quarterOrder.indexOf(b.Quarter)
+            );
+          })
           .map((commitment) => {
             const newCommitment = {
               ...useCommitmentStore.getState().commitmentInputTemplate,

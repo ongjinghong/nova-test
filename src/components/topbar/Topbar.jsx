@@ -56,7 +56,7 @@ export default function TopBar() {
           <Button
             variant="contained"
             startIcon={<SmartToyIcon />}
-            sx={{ width: 150 }}
+            sx={{ width: 150, borderRadius: 20 }}
           >
             NOVA Agent
           </Button>

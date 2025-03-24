@@ -31,10 +31,10 @@ function News() {
 
   return (
     <Grid container spacing={1} columns={12}>
-      <Grid size={12} className="news-header">
+      {/* <Grid size={12} className="news-header">
         <Typography variant="h6">Tech News</Typography>
         <Chip icon={<AddIcon fontSize="small" />} label="Add" disabled />
-      </Grid>
+      </Grid> */}
       {currentNews.map((card) => (
         <Grid size={3} key={card.id}>
           <Card className="news-card" onClick={() => openUrl(card.URL)}>

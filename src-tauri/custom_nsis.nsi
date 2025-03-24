@@ -28,10 +28,10 @@ ${StrLoc}
 
 !define WEBVIEW2APPGUID "{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}"
 
-!define MANUFACTURER "nova"
+!define MANUFACTURER "Intel Corporation"
 !define PRODUCTNAME "Intel Flex NOVA"
-!define VERSION "0.2.0"
-!define VERSIONWITHBUILD "0.2.0.0"
+!define VERSION "0.3.0"
+!define VERSIONWITHBUILD "0.3.0.0"
 !define HOMEPAGE ""
 !define INSTALLMODE "currentUser"
 !define LICENSE ""

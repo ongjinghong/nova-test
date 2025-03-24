@@ -2,12 +2,14 @@
   <br>
   <a><img src="public/icon.png" alt="NOVA" width="200"></a>
   <br>
-  Intel Flex NOVA
+  Intel Flex NOVA 
   <br>
+  <small style="font-size: 12px;">Where Innovation Takes Flight</small>
 </h1>
 
 <div align="center">
   A desktop app built to manage Intel Flex's Innovation activities.
+  <br>
 
 <div align="center">
 
@@ -36,26 +38,27 @@
 
 ## Key Features
 
-- LiveView - Make changes, See changes
-  - Instantly see your innovation tracking data once you submit
-- Single app - Everything you need
-  - Dashboard, Submission, Annoucement in single app
-- Lightweight ( < 10MB) and Fast
-- Dark/Light mode
-- Overview page
-  - Annoucement panel - Stay informed on innovation program
-  - News panel - Stay updated to the trend
-  - Profile card - Understand personal innovation status
-- Innovation Stars page - <b>Coming Soon! - Q2 2025</b>
-- Commitment page
-- Submission page
-- Target page
-- NOVA points tracking - <b>Coming Soon! - 2H 2025</b>
-  - tracks partipation points
-- NOVA AI agent - <b>Coming Soon! - 2H 2025</b>
-  - help answering question on Intel Flex's Innovation
-  - help ideate innovation idea
-  - help innovate with Innovation Thinking tools
+- **LiveView - Make changes, See changes**
+  - Instantly visualize your innovation tracking data upon update.
+- **Single App - Everything You Need**
+  - Access Dashboard, Submission, and Announcements all in one place.
+- **Lightweight & Fast**
+  - Less than 10MB in size, ensuring quick performance.
+- **Dark/Light Mode**
+  - Switch between dark and light themes to suit your preference.
+- **NOVA Points Tracking** - _Coming Soon! - 2H 2025_
+  - Track your participation points.
+- **NOVA AI Agent** - _Coming Soon! - 2H 2025_
+  - Get answers to your questions about Intel Flex's Innovation.
+  - Generate innovative ideas.
+  - Utilize Innovation Thinking tools to enhance your creativity.
+- **Pages**
+  - **Overview Page** - Latest News + Flex Global Performance
+  - **Commitment Page** - Total + Category + Quarter Number of Commitment
+  - **Submission Page** - Total Submission + Participant Ratio + Acceptance Rate + Category/Monthly Bar Chart
+  - **Target Page** - Total Targets + Category Target + Quarter Bar Chart
+  - **Member Page** - View all Flex members with their respective experiences - _Coming Soon! - Q2 2025_
+  - **Innovation Stars Page** - _Coming Soon! - Q2 2025_
 
 ## How To Use
 

@@ -117,7 +117,8 @@ export default function SubmissionDetailsTable({ rows }) {
             <OpenInNewIcon sx={{ marginLeft: 0.5, fontSize: "12px" }} />
           </Button>
           {params.row.Year === currentYear &&
-            params.row.PrimaryAuthor === loginMember.Name && (
+            (params.row.PrimaryAuthor === loginMember.Name ||
+              params.row.SecondaryAuthors.includes(loginMember.Name)) && (
               <Button
                 variant="contained"
                 size="small"

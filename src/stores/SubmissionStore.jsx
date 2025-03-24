@@ -142,18 +142,20 @@ const useSubmissionStore = create((set) => ({
               ...commonItem,
               Duration: null,
               SubmissionPlatformID: item.fields.SubmissionID,
-              SecondaryAuthors: item.fields.SecondaryAuthor?.map(
-                (author) => author.LookupValue
-              ),
+              SecondaryAuthors:
+                item.fields.SecondaryAuthor?.map(
+                  (author) => author.LookupValue
+                ) || [],
             };
           } else {
             return {
               ...commonItem,
               Duration: item.fields.Duration,
               SubmissionPlatformID: item.fields.SubmissionPlatformID,
-              SecondaryAuthors: item.fields.SecondaryAuthors?.map(
-                (author) => author.LookupValue
-              ),
+              SecondaryAuthors:
+                item.fields.SecondaryAuthors?.map(
+                  (author) => author.LookupValue
+                ) || [],
             };
           }
         }
@@ -350,6 +352,8 @@ const useSubmissionStore = create((set) => ({
     }),
 
   addSubmission: async (input) => {
+    useAppStore.getState().openStatus();
+    useAppStore.getState().setStatusMessage("Adding submission...");
     try {
       const response = await invoke("add_sharepoint_list_item", {
         token: useLoginStore.getState().accessToken,
@@ -359,7 +363,6 @@ const useSubmissionStore = create((set) => ({
         fields: input,
       });
       if (response === "Item updated successfully") {
-        useAppStore.getState().openStatus();
         useAppStore
           .getState()
           .setStatusMessage("Submission added successfully!");
@@ -373,6 +376,8 @@ const useSubmissionStore = create((set) => ({
   },
 
   updateSubmission: async (input) => {
+    useAppStore.getState().openStatus();
+    useAppStore.getState().setStatusMessage("Updating submission...");
     try {
       const response = await invoke("update_sharepoint_list_item", {
         token: useLoginStore.getState().accessToken,
@@ -383,7 +388,6 @@ const useSubmissionStore = create((set) => ({
         fields: input,
       });
       if (response === "Item updated successfully") {
-        useAppStore.getState().openStatus();
         useAppStore
           .getState()
           .setStatusMessage("Submission updated successfully!");

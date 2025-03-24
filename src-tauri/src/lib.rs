@@ -5,6 +5,8 @@ use chrono::Timelike;
 use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
 use reqwest::Client;
 use serde_json::json;
+use umya_spreadsheet::*;
+use std::path::PathBuf;
 
 #[tauri::command]
 async fn get_lookup_id(email: String) -> Result<i32, String> {
@@ -72,6 +74,122 @@ async fn fetch_profile_photo(token: String, email: String) -> Result<String, Str
 }
 
 #[tauri::command]
+fn export_to_performance_xlsx(
+    data: String,
+    quarters: String,
+    data_by_quarter: String,
+    path: String
+) -> Result<(), String> {
+    let data: Vec<Vec<String>> = serde_json::from_str(&data).map_err(|e| e.to_string())?;
+    let quarters: Vec<String> = serde_json::from_str(&quarters).map_err(|e| e.to_string())?;
+    let data_by_quarter: Vec<Vec<Vec<String>>> = serde_json::from_str(&data_by_quarter).map_err(|e| e.to_string())?;
+
+    let mut book = new_file();
+
+    // Rename the default sheet
+    let sheet_name = "2025";
+    book.get_sheet_by_name_mut("Sheet1").unwrap().set_name(sheet_name);
+
+    let mut font = Font::default();
+
+    // Define header style
+    let mut header_style = Style::default();
+    header_style.set_background_color("0054AE");
+    let mut color = Color::default();
+    color.set_argb("FFFFFFFF");
+    font.set_color(color);
+    header_style.set_font(font.clone());
+    header_style.get_alignment_mut().set_horizontal(HorizontalAlignmentValues::Center);
+    header_style.get_alignment_mut().set_vertical(VerticalAlignmentValues::Center);
+
+    // Define cell style
+    let mut cell_style = Style::default();
+    cell_style.set_background_color(Color::COLOR_WHITE);
+    cell_style.get_alignment_mut().set_horizontal(HorizontalAlignmentValues::Center);
+    cell_style.get_alignment_mut().set_vertical(VerticalAlignmentValues::Center);
+
+    // Define header style
+    let mut total_header_style = Style::default();
+    total_header_style.set_background_color("FFA500");
+    total_header_style.get_alignment_mut().set_horizontal(HorizontalAlignmentValues::Center);
+    total_header_style.get_alignment_mut().set_vertical(VerticalAlignmentValues::Center);
+
+    // Define total style
+    let mut total_cell_style = Style::default();
+    total_cell_style.set_background_color("FFFF00");
+    total_cell_style.get_alignment_mut().set_horizontal(HorizontalAlignmentValues::Center);
+    total_cell_style.get_alignment_mut().set_vertical(VerticalAlignmentValues::Center);
+
+    // Populate the main sheet
+    if let Some(sheet) = book.get_sheet_by_name_mut(sheet_name) {
+        for (i, row) in data.iter().enumerate() {
+            for (j, cell) in row.iter().enumerate() {
+                let mut style = &cell_style;
+                    if i == 0 {
+                        if j == row.len() -1 || j == row.len() - 2 {
+                            style = &total_header_style
+                        } else {
+                            style = &header_style
+                        }
+                    } else if i == data.len() - 1 {
+                        style = &total_cell_style
+                    } else {
+                        if j == row.len() -1 || j == row.len() - 2 {
+                            style = &total_cell_style
+                        }
+                    }
+                sheet.get_cell_mut((j as u32 + 1, i as u32 + 1))
+                    .set_value(cell) // Directly set the cell value
+                    .set_style(style.clone());
+            }
+        }
+        sheet.get_column_dimension_mut("A").set_width(40.0);
+        for col in ["B", "C", "D", "E", "F", "G", "H", "I", "J"] {
+            sheet.get_column_dimension_mut(col).set_width(20.0);
+        }
+    }
+
+    // Create and populate sheets for each quarter
+    for (i, quarter) in quarters.iter().enumerate() {
+        let _ = book.new_sheet(quarter);
+        if let Some(sheet) = book.get_sheet_by_name_mut(quarter) {
+            for (j, row) in data_by_quarter[i].iter().enumerate() {
+                for (k, cell) in row.iter().enumerate() {
+                    let mut style = &cell_style;
+                    if j == 0 {
+                        if k == row.len() -1 || k == row.len() - 2 {
+                            style = &total_header_style
+                        } else {
+                            style = &header_style
+                        }
+                    } else if j == data.len() - 1 {
+                        style = &total_cell_style
+                    } else {
+                        if k == row.len() -1 || k == row.len() - 2 {
+                            style = &total_cell_style
+                        }
+                    }
+                    sheet.get_cell_mut((k as u32 + 1, j as u32 + 1))
+                        .set_value(cell) // Directly set the cell value
+                        .set_style(style.clone());
+                }
+            }
+            sheet.get_column_dimension_mut("A").set_width(40.0);
+            for col in ["B", "C", "D", "E", "F", "G", "H", "I", "J"] {
+                sheet.get_column_dimension_mut(col).set_width(20.0);
+            }
+        }
+    }
+
+    // Write the workbook to a file
+    let mut basepath = PathBuf::from(path);
+    basepath.push("Innovation_Performance.xlsx");
+    writer::xlsx::write(&book, basepath).map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+#[tauri::command]
 fn get_greeting() -> String {
     let current_hour = Local::now().hour();
 
@@ -87,6 +205,7 @@ fn get_greeting() -> String {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_shell::init())
@@ -94,6 +213,7 @@ pub fn run() {
             fetch_profile_photo,
             get_greeting,
             get_lookup_id,
+            export_to_performance_xlsx,
             msgraph_api::get_intel_employee_name,
             msgraph_api::get_ms_profile,
             msgraph_api::get_ms_profile_pic,

@@ -23,11 +23,14 @@ import {
   Groups,
   EmojiEvents,
   Construction,
+  SportsEsports,
 } from "@mui/icons-material";
 
 import "./sideBar.css";
 import appIcon from "../../assets/icon.png";
 import useAppStore from "../../stores/AppStore";
+import useInnovationStore from "../../stores/InnovationStore";
+// import useFunStore from "../../stores/FunStore";
 
 export default function SideBar() {
   const version = useAppStore((state) => state.appVersion);
@@ -41,6 +44,12 @@ export default function SideBar() {
 
   const handlePageChange = (page) => {
     useAppStore.getState().setCurrentPage(page);
+    if (page === "Tools") {
+      useInnovationStore.getState().setCurrentPage("home");
+    }
+    // else if (page === "Fun Activities") {
+    //   useFunStore.getState().setCurrentPage("home");
+    // }
   };
 
   return (
@@ -71,7 +80,7 @@ export default function SideBar() {
               <Box key={page}>
                 <ListItem disablePadding>
                   <ListItemButton
-                    disabled={!appReady || index >= 4}
+                    disabled={!appReady || (index >= 4 && index < 7)}
                     selected={currentPage === page}
                     onClick={() => handlePageChange(page)}
                   >
@@ -84,7 +93,8 @@ export default function SideBar() {
                       {page === "FullSpectrum" && <AllInclusive />}
                       {page === "Members" && <Groups />}
                       {page === "Hall of Fames" && <EmojiEvents />}
-                      {page === "Tools/Techniques" && <Construction />}
+                      {page === "Tools" && <Construction />}
+                      {page === "Fun Activities" && <SportsEsports />}
                     </ListItemIcon>
                     <ListItemText primary={page} />
                   </ListItemButton>

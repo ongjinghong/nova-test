@@ -215,6 +215,7 @@ export default function SubmissionForm() {
   };
 
   const handleSubmit = async () => {
+    handleFormClose(); // Close Form First
     if (submissionFormPage === 2) {
       useSubmissionStore
         .getState()

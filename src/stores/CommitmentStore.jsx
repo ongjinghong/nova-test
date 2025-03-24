@@ -311,6 +311,7 @@ const useCommitmentStore = create((set) => ({
           .setStatusMessage("Commitment added successfully!");
         useCommitmentStore.getState().getCommitments(2025);
       } else {
+        useAppStore.getState().openStatus();
         useAppStore.getState().setStatusMessage("Some items failed to update.");
       }
     } catch (error) {
@@ -343,6 +344,8 @@ const useCommitmentStore = create((set) => ({
         useAppStore.getState().setStatusMessage("Commitment updated!");
         useCommitmentStore.getState().getCommitments(2025);
       } else {
+        useAppStore.getState().openStatus();
+        S;
         useAppStore.getState().setStatusMessage("Some items failed to update.");
       }
     } catch (error) {

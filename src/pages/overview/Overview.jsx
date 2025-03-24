@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { Button, Box, Stack } from "@mui/material";
+import { Button, Box, Stack, Divider } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import HomeIcon from "@mui/icons-material/Home";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
@@ -38,6 +38,7 @@ function Overview() {
 
   useEffect(() => {
     const fetchData = async () => {
+      useAppStore.getState().openStatus();
       useAppStore
         .getState()
         .setStatusMessage("Fetching Required Data from Sharepoint...");
@@ -72,13 +73,13 @@ function Overview() {
       if (targets.length === 0) {
         await useTargetStore.getState().getTargets(currentYear);
       }
+      useAppStore.getState().openStatus();
       useAppStore.getState().setStatusMessage("All Data Fetched Successfully");
       useAppStore.getState().setAppReady();
     };
 
     if (token && !appReady) {
       useAppStore.getState().clearAppReady();
-      useAppStore.getState().openStatus();
       fetchData();
     }
   }, [token]);
@@ -91,45 +92,43 @@ function Overview() {
         columns={12}
         sx={{ justifyContent: "center" }}
       >
+        {portalLink.map((link) => (
+          <Grid size={2} key={link.name}>
+            <Button
+              variant="outlined"
+              startIcon={
+                link.name === "Portal" ? (
+                  <HomeIcon />
+                ) : link.name === "Conferences" ? (
+                  <SpatialAudioOffIcon />
+                ) : link.name === "IDF" ? (
+                  <InsertDriveFileIcon />
+                ) : link.name === "Initiatives" ? (
+                  <FlagCircleIcon />
+                ) : link.name === "Micro Innovation" ? (
+                  <ConstructionIcon />
+                ) : link.name === "Open Source" ? (
+                  <GitHubIcon />
+                ) : null
+              }
+              size="medium"
+              fullWidth
+              onClick={() => {
+                openUrl(link.url);
+              }}
+            >
+              {link.name}
+            </Button>
+          </Grid>
+        ))}
+
         <Grid size={12}>
           <News />
         </Grid>
 
-        <Grid size={10} sx={{ mt: 4 }}>
-          <Grid container spacing={2} columns={12}>
-            {portalLink.map((link) => (
-              <Grid size={4} key={link.name}>
-                <Button
-                  variant="outlined"
-                  startIcon={
-                    link.name === "Portal Home Page" ? (
-                      <HomeIcon />
-                    ) : link.name === "Conferences" ? (
-                      <SpatialAudioOffIcon />
-                    ) : link.name === "IDF" ? (
-                      <InsertDriveFileIcon />
-                    ) : link.name === "Initiatives" ? (
-                      <FlagCircleIcon />
-                    ) : link.name === "Micro Innovation" ? (
-                      <ConstructionIcon />
-                    ) : link.name === "Open Source" ? (
-                      <GitHubIcon />
-                    ) : null
-                  }
-                  size="medium"
-                  fullWidth
-                  onClick={() => {
-                    openUrl(link.url);
-                  }}
-                >
-                  {link.name}
-                </Button>
-              </Grid>
-            ))}
-            <Grid size={12} sx={{ mt: 4 }}>
-              <OverviewPerformance />
-            </Grid>
-          </Grid>
+        <Divider sx={{ width: "100%" }} />
+        <Grid size={12} sx={{ mt: 1 }}>
+          <OverviewPerformance />
         </Grid>
       </Grid>
     </Box>
