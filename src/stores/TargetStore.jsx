@@ -221,6 +221,8 @@ const useTargetStore = create((set) => ({
   },
 
   addTarget: async () => {
+    useAppStore.getState().openStatus();
+    useAppStore.getState().setStatusMessage("Adding target...");
     try {
       const input = useTargetStore.getState().targetsInput;
       const responses = await Promise.all(
@@ -238,7 +240,6 @@ const useTargetStore = create((set) => ({
       if (
         responses.every((response) => response === "Item updated successfully")
       ) {
-        useAppStore.getState().openStatus();
         useAppStore.getState().setStatusMessage("Targets added successfully!");
         useTargetStore.getState().getTargets(2025);
       } else {
@@ -250,6 +251,8 @@ const useTargetStore = create((set) => ({
   },
 
   updateTarget: async () => {
+    useAppStore.getState().openStatus();
+    useAppStore.getState().setStatusMessage("Updating target...");
     try {
       const input = useTargetStore.getState().targetsInput;
       const responses = await Promise.all(
@@ -269,7 +272,6 @@ const useTargetStore = create((set) => ({
       if (
         responses.every((response) => response === "Item updated successfully")
       ) {
-        useAppStore.getState().openStatus();
         useAppStore.getState().setStatusMessage("Targets updated succesfully!");
         useTargetStore.getState().getTargets(2025);
       } else {

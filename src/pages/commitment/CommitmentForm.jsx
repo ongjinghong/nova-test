@@ -113,12 +113,12 @@ export default function CommitmentForm() {
   };
 
   const handleSubmit = () => {
+    handleFormClose();
     if (commitmentFormType === "Add") {
       useCommitmentStore.getState().addCommitment();
     } else if (commitmentFormType === "Update") {
       useCommitmentStore.getState().updateCommitment();
     }
-    useCommitmentStore.getState().closeCommitmentForm();
   };
 
   return (

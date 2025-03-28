@@ -52,6 +52,12 @@ export default function TargetForm() {
               target.Site === loginMember.Site &&
               target.Domain === loginMember.Domain
           )
+          .sort((a, b) => {
+            const quarterOrder = ["Q1", "Q2", "Q3", "Q4"];
+            return (
+              quarterOrder.indexOf(a.Quarter) - quarterOrder.indexOf(b.Quarter)
+            );
+          })
           .map((target) => {
             const newTarget = {
               ...useTargetStore.getState().targetInputTemplate,

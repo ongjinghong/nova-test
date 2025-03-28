@@ -107,11 +107,19 @@ const Commitment = () => {
         {commitments.filter(
           (item) =>
             item.Year === currentYear && item.Email === loginMember.Email
-        ).length === 4 ? (
+        ).length > 0 ? (
           <Button
             className="header-button"
             variant="contained"
             startIcon={<AutoFixHighIcon />}
+            disabled={
+              commitments.filter(
+                (item) =>
+                  item.Year === currentYear && item.Email === loginMember.Email
+              ).length === 4
+                ? true
+                : false
+            }
             onClick={handleUpdateClick}
           >
             Update {currentYear} Commitment

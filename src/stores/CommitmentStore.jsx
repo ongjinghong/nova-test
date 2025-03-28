@@ -287,6 +287,8 @@ const useCommitmentStore = create((set) => ({
   },
 
   addCommitment: async () => {
+    useAppStore.getState().openStatus();
+    useAppStore.getState().setStatusMessage("Adding commitment...");
     try {
       const input = useCommitmentStore.getState().commitmentsInput;
       const responses = await Promise.all(
@@ -305,13 +307,11 @@ const useCommitmentStore = create((set) => ({
       if (
         responses.every((response) => response === "Item updated successfully")
       ) {
-        useAppStore.getState().openStatus();
         useAppStore
           .getState()
           .setStatusMessage("Commitment added successfully!");
         useCommitmentStore.getState().getCommitments(2025);
       } else {
-        useAppStore.getState().openStatus();
         useAppStore.getState().setStatusMessage("Some items failed to update.");
       }
     } catch (error) {
@@ -320,6 +320,8 @@ const useCommitmentStore = create((set) => ({
   },
 
   updateCommitment: async () => {
+    useAppStore.getState().openStatus();
+    useAppStore.getState().setStatusMessage("Updating submission...");
     try {
       const input = useCommitmentStore.getState().commitmentsInput;
       const responses = await Promise.all(
@@ -340,12 +342,9 @@ const useCommitmentStore = create((set) => ({
       if (
         responses.every((response) => response === "Item updated successfully")
       ) {
-        useAppStore.getState().openStatus();
         useAppStore.getState().setStatusMessage("Commitment updated!");
         useCommitmentStore.getState().getCommitments(2025);
       } else {
-        useAppStore.getState().openStatus();
-        S;
         useAppStore.getState().setStatusMessage("Some items failed to update.");
       }
     } catch (error) {
