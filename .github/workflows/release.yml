@@ -47,7 +47,11 @@ jobs:
           if-no-files-found: error
 
       - name: Release
-        uses: fnkr/github-action-ghr@v1
-        env:
-          GHR_PATH: src-tauri/target/release/bundle/
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.TOKEN }}
+          file_glob: true
+          file: src-tauri/target/release/bundle/**/*.{msi,exe}
+          tag: ${{ github.ref }}
+          overwrite: true
+          prerelease: false
