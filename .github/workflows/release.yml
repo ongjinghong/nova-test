@@ -1,0 +1,61 @@
+name: Release
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  release:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [windows-latest]
+        include:
+          - platform: windows-latest
+            target: windows
+            extension: msi
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Rust Stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Windows dependencies
+        if: matrix.platform == 'windows-latest'
+        run: |
+          rustup target add x86_64-pc-windows-msvc
+
+      - name: Build the app
+        run: npm run tauri build
+        env:
+          TAURI_BUILD_NO_SIGNATURE: true
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Intel-Flex-NOVA-${{ matrix.target }}
+          path: src-tauri/target/release/bundle/${{ matrix.target }}/*
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            src-tauri/target/release/bundle/${{ matrix.target }}/*.${{ matrix.extension }}
+            src-tauri/target/release/bundle/${{ matrix.target }}/*.exe
+          draft: true
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -35,11 +35,11 @@ ${StrLoc}
 !define HOMEPAGE ""
 !define INSTALLMODE "currentUser"
 !define LICENSE ""
-!define INSTALLERICON "C:\Users\zhengchy\Project\official-nova\src-tauri\icons\icon.ico"
+!define INSTALLERICON "C:\Users\ongjingh\Desktop\applications.tools.intel-flex-nova\src-tauri\icons\icon.ico"
 !define SIDEBARIMAGE ""
 !define HEADERIMAGE ""
 !define MAINBINARYNAME "nova"
-!define MAINBINARYSRCPATH "C:\Users\zhengchy\Project\official-nova\src-tauri\target\release\nova.exe"
+!define MAINBINARYSRCPATH "C:\Users\ongjingh\Desktop\applications.tools.intel-flex-nova\src-tauri\target\release\nova.exe"
 !define BUNDLEID "com.nova.app"
 !define COPYRIGHT ""
 !define OUTFILE "nsis-output.exe"
@@ -436,7 +436,7 @@ FunctionEnd
 ;Languages
 !insertmacro MUI_LANGUAGE "English"
 !insertmacro MUI_RESERVEFILE_LANGDLL
-  !include "C:\Users\zhengchy\Project\official-nova\src-tauri\target\release\nsis\x64\English.nsh"
+  !include "C:\Users\ongjingh\Desktop\applications.tools.intel-flex-nova\src-tauri\target\release\nsis\x64\English.nsh"
 
 Function .onInit
   ${GetOptions} $CMDLINE "/P" $PassiveMode
