@@ -42,7 +42,7 @@ jobs:
         run: npm run tauri build
         env:
           TAURI_BUILD_NO_SIGNATURE: true
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
@@ -62,4 +62,4 @@ jobs:
           draft: true
           generate_release_notes: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
