@@ -35,11 +35,11 @@ ${StrLoc}
 !define HOMEPAGE ""
 !define INSTALLMODE "currentUser"
 !define LICENSE ""
-!define INSTALLERICON "C:\Users\ongjingh\Desktop\applications.tools.intel-flex-nova\src-tauri\icons\icon.ico"
+!define INSTALLERICON "$%TAURI_DIR_PATH%\icons\icon.ico"
 !define SIDEBARIMAGE ""
 !define HEADERIMAGE ""
 !define MAINBINARYNAME "nova"
-!define MAINBINARYSRCPATH "C:\Users\ongjingh\Desktop\applications.tools.intel-flex-nova\src-tauri\target\release\nova.exe"
+!define MAINBINARYSRCPATH "$%TAURI_DIR_PATH%\target\release\nova.exe"
 !define BUNDLEID "com.nova.app"
 !define COPYRIGHT ""
 !define OUTFILE "nsis-output.exe"
@@ -54,7 +54,7 @@ ${StrLoc}
 !define MINIMUMWEBVIEW2VERSION ""
 !define UNINSTKEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCTNAME}"
 !define MANUPRODUCTKEY "Software\${MANUFACTURER}\${PRODUCTNAME}"
-!define UNINSTALLERSIGNCOMMAND "$\"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.22621.0\\x64\\signtool.exe$\" $\"sign$\" $\"/fd$\" $\"sha256$\" $\"/sha1$\" $\"560e14af121117d49b79007e67b3af48b8896810$\" $\"/d$\" $\"Intel Flex NOVA$\" $\"/t$\" $\"http://timestamp.comodoca.com$\" $\"%1$\""
+!define UNINSTALLERSIGNCOMMAND "$\"$%WIX_PATH%\signtool.exe$\" $\"sign$\" $\"/fd$\" $\"sha256$\" $\"/sha1$\" $\"560e14af121117d49b79007e67b3af48b8896810$\" $\"/d$\" $\"Intel Flex NOVA$\" $\"/t$\" $\"http://timestamp.comodoca.com$\" $\"%1$\""
 !define ESTIMATEDSIZE "16556"
 !define STARTMENUFOLDER "Intel Flex"
 
@@ -436,7 +436,7 @@ FunctionEnd
 ;Languages
 !insertmacro MUI_LANGUAGE "English"
 !insertmacro MUI_RESERVEFILE_LANGDLL
-  !include "C:\Users\ongjingh\Desktop\applications.tools.intel-flex-nova\src-tauri\target\release\nsis\x64\English.nsh"
+  !include "$%TAURI_DIR_PATH%\target\release\nsis\x64\English.nsh"
 
 Function .onInit
   ${GetOptions} $CMDLINE "/P" $PassiveMode
