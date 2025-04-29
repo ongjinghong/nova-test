@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [windows-latest]
+        platform: [self-hosted]
         include:
           - platform: windows-latest
             target: windows
