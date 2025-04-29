@@ -42,12 +42,16 @@ jobs:
         run: npm run tauri build
         env:
           TAURI_BUILD_NO_SIGNATURE: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: Intel-Flex-NOVA-${{ matrix.target }}
-          path: src-tauri/target/release/bundle/${{ matrix.target }}/*
+          path: |
+            src-tauri/target/release/bundle/msi/*.msi
+            src-tauri/target/release/bundle/nsis/*.exe
+          if-no-files-found: error
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
