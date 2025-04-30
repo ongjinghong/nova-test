@@ -34,7 +34,7 @@ jobs:
       - name: Build the app
         run: |
           cd src-tauri
-          pwsh -File set-nsis-vars.ps1
+          powershell -File set-nsis-vars.ps1
           cd ..
           npm run tauri build
         env:
