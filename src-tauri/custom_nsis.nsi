@@ -35,11 +35,11 @@ ${StrLoc}
 !define HOMEPAGE ""
 !define INSTALLMODE "currentUser"
 !define LICENSE ""
-!define INSTALLERICON "$%TAURI_DIR_PATH%\icons\icon.ico"
+!define INSTALLERICON "{{installer_icon}}"
 !define SIDEBARIMAGE ""
 !define HEADERIMAGE ""
 !define MAINBINARYNAME "nova"
-!define MAINBINARYSRCPATH "$%TAURI_DIR_PATH%\target\release\nova.exe"
+!define MAINBINARYSRCPATH "{{main_binary_path}}"
 !define BUNDLEID "com.nova.app"
 !define COPYRIGHT ""
 !define OUTFILE "nsis-output.exe"
@@ -434,9 +434,13 @@ FunctionEnd
 !insertmacro MUI_UNPAGE_INSTFILES
 
 ;Languages
-!insertmacro MUI_LANGUAGE "English"
+{{#each languages}}
+!insertmacro MUI_LANGUAGE "{{this}}"
+{{/each}}
 !insertmacro MUI_RESERVEFILE_LANGDLL
-  !include "$%TAURI_DIR_PATH%\target\release\nsis\x64\English.nsh"
+{{#each language_files}}
+  !include "{{this}}"
+{{/each}}
 
 Function .onInit
   ${GetOptions} $CMDLINE "/P" $PassiveMode

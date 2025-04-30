@@ -29,6 +29,9 @@
     "targets": "all",
     "icon": ["icons/icon.ico"],
     "windows": {
+      "wix": {
+        "language": ["en-US"]
+      },
       "nsis": {
         "template": "./custom_nsis.nsi"
       },
