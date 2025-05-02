@@ -46,7 +46,6 @@ jobs:
         with:
           name: Intel-Flex-NOVA
           path: |
-            src-tauri/target/release/bundle/**/*.msi
             src-tauri/target/release/bundle/**/*.exe
           if-no-files-found: error
 
@@ -55,7 +54,7 @@ jobs:
         with:
           repo_token: ${{ secrets.TOKEN }}
           file_glob: true
-          file: src-tauri/target/release/bundle/**/*.{msi,exe}
+          file: src-tauri/target/release/bundle/**/*.exe
           tag: ${{ github.ref }}
           overwrite: true
           prerelease: false
