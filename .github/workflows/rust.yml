@@ -8,6 +8,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
 jobs:
   build:
@@ -16,7 +17,29 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Build
-      run: cargo build --verbose
-    - name: Run tests
-      run: cargo test --verbose
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build the app
+      run: |
+        cd src-tauri
+        npm run tauri build
+      env:
+        TAURI_BUILD_NO_SIGNATURE: true
+        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: Intel-Flex-NOVA
+        path: |
+          src-tauri/target/release/bundle/**/*.exe
+        if-no-files-found: error
+    
