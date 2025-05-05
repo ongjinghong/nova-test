@@ -30,6 +30,7 @@ jobs:
     - name: Build the app
       run: |
         ls
+        rustc --version
         cd src-tauri
         ls
         npm run tauri build
