@@ -7,7 +7,7 @@ on:
 
 jobs:
   release:
-    runs-on: self-hosted
+    runs-on: sandbox.prod.amr.k8s
     env:
       GITHUB_TOKEN: ${{ secrets.TOKEN }}
     steps:
