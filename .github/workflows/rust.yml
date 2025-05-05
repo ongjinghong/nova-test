@@ -29,7 +29,9 @@ jobs:
 
     - name: Build the app
       run: |
+        ls
         cd src-tauri
+        ls
         npm run tauri build
       env:
         TAURI_BUILD_NO_SIGNATURE: true
