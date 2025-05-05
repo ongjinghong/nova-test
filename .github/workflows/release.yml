@@ -34,8 +34,6 @@ jobs:
       - name: Build the app
         run: |
           cd src-tauri
-          powershell -File set-nsis-vars.ps1
-          cd ..
           npm run tauri build
         env:
           TAURI_BUILD_NO_SIGNATURE: true
