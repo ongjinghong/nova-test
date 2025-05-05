@@ -24,7 +24,7 @@ jobs:
         run: npm ci
 
       - name: Install Rust
-        uses: actions-rs/toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: stable
           target: x86_64-pc-windows-msvc
@@ -46,13 +46,3 @@ jobs:
           path: |
             src-tauri/target/release/bundle/**/*.exe
           if-no-files-found: error
-
-      - name: Release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.TOKEN }}
-          file_glob: true
-          file: src-tauri/target/release/bundle/**/*.exe
-          tag: ${{ github.ref }}
-          overwrite: true
-          prerelease: false
