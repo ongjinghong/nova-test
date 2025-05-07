@@ -7,7 +7,7 @@ on:
 
 jobs:
   release:
-    runs-on: [some_arc_runner_label]
+    runs-on: innersource.prod.amr.dind
     env:
       GITHUB_TOKEN: ${{ secrets.TOKEN }}
     steps:
