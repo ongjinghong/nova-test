@@ -21,12 +21,6 @@ jobs:
           cache: 'npm'
 
       - name: Install Rust
-        uses: actions-rust-lang/setup-rust-toolchain@1fbea72663f6d4c03efaab13560c8a24cfd2a7cc
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
@@ -36,6 +30,9 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: check
+          
+      - name: Install dependencies
+        run: npm ci
 
       - name: Build the app
         run: |
