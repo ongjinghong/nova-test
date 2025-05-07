@@ -54,7 +54,7 @@ ${StrLoc}
 !define MINIMUMWEBVIEW2VERSION ""
 !define UNINSTKEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCTNAME}"
 !define MANUPRODUCTKEY "Software\${MANUFACTURER}\${PRODUCTNAME}"
-!define UNINSTALLERSIGNCOMMAND "$\"$%WIX_PATH%\signtool.exe$\" $\"sign$\" $\"/fd$\" $\"sha256$\" $\"/sha1$\" $\"560e14af121117d49b79007e67b3af48b8896810$\" $\"/d$\" $\"Intel Flex NOVA$\" $\"/t$\" $\"http://timestamp.comodoca.com$\" $\"%1$\""
+!define UNINSTALLERSIGNCOMMAND "{{uninstaller_sign_cmd}}"
 !define ESTIMATEDSIZE "16556"
 !define STARTMENUFOLDER "Intel Flex"
 
