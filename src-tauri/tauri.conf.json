@@ -35,9 +35,6 @@
       "nsis": {
         "template": "./custom_nsis.nsi",
         "installerIcon": "icons/icon.ico"
-      },
-      "digestAlgorithm": "sha256",
-      "timestampUrl": "http://timestamp.comodoca.com"
-    }
+      }
   }
 }
