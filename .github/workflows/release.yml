@@ -50,7 +50,7 @@ jobs:
           if-no-files-found: error
 
       - name: Release
-        uses: intel-innersource/frameworks.actions.thirdparty.action-gh-release@master
+        uses: softprops/action-gh-release@master
         with:
           token: ${{ secrets.TOKEN }}
           files: src-tauri/target/release/bundle/**/*.exe
