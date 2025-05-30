@@ -23,9 +23,9 @@ jobs:
           cache: 'npm'
 
       - name: Install Rust with Toolchains
-        uses: moonrepo/setup-rust@e013866c4215f77c925f42f60257dec7dd18836e
+        uses: actions-use/setup-rust@stable
         with:
-          channel: 'stable'
+          toolchain: stable
         
       - name: Install dependencies
         run: npm install
