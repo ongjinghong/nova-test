@@ -22,16 +22,13 @@ jobs:
           node-version: 18
           cache: 'npm'
 
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
+      - name: Install Rust with Toolchains
+        uses: moonrepo/setup-rust@e013866c4215f77c925f42f60257dec7dd18836e
         with:
-          profile: minimal
-          override: true
-
-      - name: Run cargo check
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
+          channel: 'stable'
+        
+      - name: Install dependencies
+        run: npm install
           
       - name: Install dependencies
         run: npm ci
