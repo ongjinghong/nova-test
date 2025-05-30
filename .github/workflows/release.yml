@@ -24,7 +24,7 @@ jobs:
 
       - name: Install Rust with Toolchains
         uses: actions-use/setup-rust@stable
-        with:
+        with: 
           toolchain: stable
         
       - name: Install dependencies
